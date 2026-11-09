@@ -18,6 +18,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Verify compressed site bundle
+        run: |
+          python - <<'PY'
+          import base64, gzip, re
+          from pathlib import Path
+          prefix = 'window.APP_GZIP=(window.APP_GZIP||"")+"'
+          pieces = []
+          for i in range(1, 6):
+              source = Path(f'payload-{i}.js').read_text(encoding='utf-8')
+              if not source.startswith(prefix) or not source.endswith('";\n'):
+                  raise SystemExit(f'Payload {i}: invalid wrapper')
+              pieces.append(source[len(prefix):-3])
+          compressed = base64.b64decode(''.join(pieces), validate=True)
+          html = gzip.decompress(compressed).decode('utf-8')
+          question_ids = re.findall(r"\\bid:'[^']+'", html)
+          assert '<!doctype html>' in html.lower(), 'Missing HTML document'
+          assert '小小腦力探險隊' in html, 'Missing site title'
+          assert len(question_ids) >= 100, f'Question bank unexpectedly small: {len(question_ids)}'
+          print(f'Bundle OK: {len(html):,} HTML characters; {len(question_ids)} question IDs.')
+          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
