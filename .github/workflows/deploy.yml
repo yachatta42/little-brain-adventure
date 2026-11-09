@@ -4,7 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 concurrency:
@@ -18,36 +18,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify compressed site bundle
+      - name: Verify site and question bank
         run: |
           python - <<'PY'
-          import base64, gzip, re
+          import re
           from pathlib import Path
-          prefix = 'window.APP_GZIP=(window.APP_GZIP||"")+"'
-          pieces = []
-          for i in range(1, 6):
-              source = Path(f'payload-{i}.js').read_text(encoding='utf-8')
-              if not source.startswith(prefix) or not source.endswith('";\n'):
-                  raise SystemExit(f'Payload {i}: invalid wrapper')
-              pieces.append(source[len(prefix):-3])
-          compressed = base64.b64decode(''.join(pieces), validate=True)
-          html = gzip.decompress(compressed).decode('utf-8')
-          question_ids = re.findall(r"id:'[^']+'", html)
+          html = Path('index.html').read_text(encoding='utf-8')
+          ids = re.findall(r"id:'([a-z]\\d+)',level:", html)
           assert '<!doctype html>' in html.lower(), 'Missing HTML document'
           assert '小小腦力探險隊' in html, 'Missing site title'
-          assert len(question_ids) >= 100, f'Question bank unexpectedly small: {len(question_ids)}'
-          Path('site-source.html').write_text(html, encoding='utf-8')
-          print(f'Bundle OK: {len(html):,} HTML characters; {len(question_ids)} question IDs.')
+          assert len(ids) == 160, f'Expected 160 questions, found {len(ids)}'
+          assert len(set(ids)) == len(ids), 'Question IDs must be unique'
+          for prefix, category in {'l':'語文表達','m':'數學推理','p':'觀察與規律','g':'分類與邏輯','s':'生活與空間','x':'空間推理','d':'資料判讀','c':'自然探究'}.items():
+              count = sum(q.startswith(prefix) for q in ids)
+              assert count == 20, f'{category}: expected 20 questions, found {count}'
+          assert html.count("type:'open'") <= 1, 'Too many open-answer questions'
+          print('Site OK: 160 unique questions; 20 questions in each of 8 categories.')
           PY
-      - name: Save editable source in repository
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add site-source.html
-          if ! git diff --cached --quiet; then
-            git commit -m 'Add editable site source'
-            git push
-          fi
+          mkdir -p dist
+          cp index.html dist/index.html
+          cp .nojekyll dist/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
