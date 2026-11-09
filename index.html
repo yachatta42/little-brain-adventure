@@ -1,8 +1,603 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f7f8f3"><title>小小腦力探險隊</title></head>
-<body style="font-family:system-ui,sans-serif;background:#f7f8f3;color:#26342f;padding:2rem">
-<p>小小腦力探險隊正在載入⋯⋯</p>
-<script src="payload-1.js"></script><script src="payload-2.js"></script><script src="payload-3.js"></script><script src="payload-4.js"></script><script src="payload-5.js"></script>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f8f3">
+<meta name="description" content="每天 5–10 分鐘，透過八大領域與多種題型，練習理解規則、舉一反三。">
+<title>小小腦力探險隊｜每天 5–10 分鐘</title>
+<style>
+:root{
+  --ink:#26342f;--muted:#6c7972;--paper:#f7f8f3;--white:#fff;--line:#e5e9df;
+  --green:#397b69;--green-dark:#28614f;--mint:#e8f3ed;--yellow:#f4c96b;--blue:#eaf2fb;
+  --purple:#f1ebf8;--orange:#fff1e3;--shadow:0 12px 32px rgba(43,65,53,.08);--radius:22px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:ui-rounded,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.65}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.wrap{max-width:1020px;margin:auto;padding:22px 22px 56px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.02em}
+.brand-mark{width:46px;height:46px;border-radius:15px;background:#e4f0e9;display:grid;place-items:center;font-size:25px}
+.brand small{display:block;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.1em}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+.nav button,.grade-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:8px 14px;font-weight:800;font-size:13px}
+.nav button.active,.grade-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.hero{position:relative;overflow:hidden;background:linear-gradient(120deg,#e6f2eb 0%,#f4f3e7 75%);border-radius:30px;padding:30px 32px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.hero:after{content:"✦";position:absolute;right:180px;top:12px;color:#d6b45d;font-size:27px;opacity:.75}
+.eyebrow{font-size:12px;font-weight:900;color:var(--green);letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:clamp(28px,4vw,42px);line-height:1.2;margin:7px 0 10px;letter-spacing:-.04em}
+.hero p{margin:0;color:#5f7067;max-width:570px}
+.hero-art{width:142px;height:142px;border-radius:38px;background:#fff9e9;display:grid;place-items:center;font-size:78px;transform:rotate(5deg);box-shadow:0 12px 25px rgba(103,92,44,.08)}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.daily-panel{padding:23px 25px;margin-bottom:18px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+.panel-head h2{margin:0;font-size:19px;letter-spacing:-.02em}
+.date-chip{background:#f2f5ef;border-radius:999px;padding:6px 11px;color:var(--muted);font-size:12px;font-weight:800}
+.stats{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0 18px}
+.stat{padding:8px 12px;background:#f7f8f4;border:1px solid #edf0e8;border-radius:13px;font-size:12px;color:var(--muted);font-weight:700}
+.stat strong{color:var(--ink);font-size:15px;margin-right:4px}
+.start-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.primary{border:0;border-radius:14px;background:var(--green);color:white;padding:13px 22px;font-weight:900;box-shadow:0 5px 0 var(--green-dark);transition:transform .15s,box-shadow .15s}
+.primary:hover{transform:translateY(-1px);box-shadow:0 6px 0 var(--green-dark)}
+.primary:active{transform:translateY(3px);box-shadow:0 2px 0 var(--green-dark)}
+.secondary{border:1px solid var(--line);border-radius:13px;background:white;color:var(--ink);padding:10px 15px;font-weight:800}
+.small-note{color:var(--muted);font-size:12px}
+.grade-select{display:flex;align-items:center;gap:7px;margin-left:auto}
+.grade-select span{color:var(--muted);font-size:12px;font-weight:800}
+.grade-btn{padding:7px 12px}
+.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+.category{border:1px solid var(--line);background:#fff;border-radius:17px;padding:13px 12px;min-height:112px}
+.category .emoji{font-size:24px;display:block;margin-bottom:7px}
+.category strong{display:block;font-size:13px}
+.category small{color:var(--muted);font-size:11px;line-height:1.45;display:block;margin-top:3px}
+.challenge{padding:24px;display:none;margin-top:18px}
+.challenge.show{display:block}
+.challenge-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.step-label{font-size:12px;color:var(--muted);font-weight:900}
+.progress{height:8px;background:#edf1e9;border-radius:20px;overflow:hidden;margin:10px 0 20px}
+.progress>div{height:100%;background:linear-gradient(90deg,#73b69a,#d2b65b);width:0%;transition:width .3s}
+.topic-pill{display:inline-flex;align-items:center;gap:6px;background:var(--mint);color:var(--green-dark);padding:6px 11px;border-radius:999px;font-size:12px;font-weight:900}
+.question-title{font-size:22px;margin:13px 0 7px;line-height:1.35;letter-spacing:-.02em}
+.prompt{font-size:17px;font-weight:700;white-space:pre-line;margin:10px 0 17px;line-height:1.8}
+.helper{font-size:13px;color:var(--muted);font-weight:500}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.option{border:1.5px solid var(--line);background:#fff;border-radius:15px;padding:13px 15px;text-align:left;color:var(--ink);font-weight:800;min-height:54px;transition:.15s;display:flex;align-items:center;gap:9px}
+.option:hover{border-color:#a8cbbb;background:#f8fcf9}
+.option.selected{border-color:var(--green);background:#eaf4ee;box-shadow:inset 0 0 0 1px var(--green)}
+.option .opt-letter{width:25px;height:25px;border-radius:9px;display:grid;place-items:center;background:#f0f2ed;color:#65746a;font-size:12px;flex-shrink:0}
+.text-answer, .open-answer{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;color:var(--ink);outline:none;background:#fcfdfb}
+.text-answer:focus,.open-answer:focus{border-color:#79ac96;box-shadow:0 0 0 3px #e6f2eb}
+.open-answer{min-height:104px;resize:vertical}
+.order-picked{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0;min-height:38px}
+.order-chip{background:#eaf4ee;color:var(--green-dark);border-radius:10px;padding:7px 10px;font-weight:800;font-size:13px}
+.order-chip button{border:0;background:transparent;color:inherit;font-weight:900;margin-left:5px}
+.action-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.hint-box,.feedback{border-radius:15px;padding:13px 15px;margin-top:15px;font-size:14px}
+.hint-box{background:#fff7df;border:1px solid #f4e5b3;color:#6f5822}
+.feedback.good{background:#eaf5ec;border:1px solid #cce5d1;color:#2d6740}
+.feedback.try{background:#f7f4eb;border:1px solid #eee3c2;color:#705b2d}
+.feedback.open{background:#eef3fb;border:1px solid #d8e3f4;color:#405b7d}
+.feedback strong{display:block;margin-bottom:3px}
+.next-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}
+.finish-card{display:none;text-align:center;padding:36px 25px;margin-top:18px}
+.finish-card.show{display:block}
+.finish-star{font-size:55px;margin-bottom:5px}
+.finish-card h2{font-size:26px;margin:5px 0}
+.finish-card p{color:var(--muted);margin:8px auto 20px;max-width:460px}
+.progress-panel{display:none;padding:23px 25px;margin-top:18px}
+.progress-panel.show{display:block}
+.progress-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.progress-box{background:#f7f8f4;border-radius:15px;padding:15px}
+.progress-box strong{font-size:25px;display:block;color:var(--green)}
+.progress-box span{font-size:12px;color:var(--muted);font-weight:700}
+.history{display:flex;gap:7px;flex-wrap:wrap}
+.day-dot{width:34px;height:34px;border-radius:11px;background:#f0f2ed;color:#8a958c;display:grid;place-items:center;font-size:11px;font-weight:900}
+.day-dot.done{background:#dcefe3;color:#2c7358}
+.parent-note{margin-top:18px;padding:18px 20px;border-radius:18px;background:#f1f0e9;border:1px solid #e7e5db}
+.parent-note summary{font-weight:900;cursor:pointer}
+.parent-note p,.parent-note li{font-size:13px;color:#657169}
+footer{text-align:center;margin-top:28px;color:#98a198;font-size:11px}
+.hidden{display:none!important}
+.match-grid{display:grid;gap:10px;margin:15px 0}.match-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:11px 13px}.match-row strong{font-size:14px}.match-row select{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;background:#fff;color:var(--ink);font:inherit;font-size:14px}.answer-note{font-size:12px;color:var(--muted);margin-top:7px}
+@media(max-width:760px){.wrap{padding:14px 14px 40px}.hero{padding:23px;grid-template-columns:1fr}.hero-art{display:none}.hero:after{right:26px;top:15px}.categories{grid-template-columns:repeat(2,1fr)}.category:last-child{min-height:86px}.match-row{grid-template-columns:1fr}.options{grid-template-columns:1fr}.daily-panel,.challenge,.progress-panel{padding:19px}.grade-select{margin-left:0;width:100%}.start-row{align-items:flex-start}.start-row .primary{width:100%}.progress-grid{grid-template-columns:1fr 1fr}.progress-grid .progress-box:last-child{grid-column:span 2}.topbar{align-items:flex-start;flex-direction:column}.nav{width:100%}.nav button{flex:1}}
+@media(min-width:761px){.prompt{max-width:800px}}
+</style>
+
+<style id="kid-friendly-layout">
+:root{--ink:#493d54;--muted:#81758a;--paper:#fff8f1;--green:#8b6ca8;--green-dark:#6f528d;--mint:#f0e7fb;--line:#eadfee;--shadow:0 12px 28px rgba(100,77,120,.10)}
+body{background:linear-gradient(145deg,#fff9ef 0%,#fff0f5 52%,#eef8ff 100%);font-size:18px}
+.wrap{max-width:1120px;padding:20px 24px 56px}
+.topbar{margin-bottom:18px}
+.brand{font-size:21px}
+.brand-mark{width:58px;height:58px;border-radius:20px;background:#ffe3ee;font-size:38px}
+.brand small{display:none}
+.nav button,.grade-btn{font-size:16px;min-height:48px;padding:9px 17px;border-radius:18px;color:#665874}
+.nav button.active,.grade-btn.active{background:#8b6ca8;border-color:#8b6ca8}
+.hero{background:linear-gradient(120deg,#fce8f1 0%,#f2eaff 58%,#e8f6ff 100%);padding:30px 34px;border-radius:30px}
+.hero:after{content:"🐾";right:175px;top:12px;color:inherit;font-size:32px;opacity:.65}
+h1{font-size:clamp(32px,4.5vw,48px);margin:0 0 10px}
+.hero p{font-size:20px;color:#685d72}
+.hero-art{width:154px;height:154px;border-radius:38px;background:#fff8fc;font-size:94px}
+.daily-panel{padding:25px 28px}
+.panel-head h2{font-size:25px}
+.stat{font-size:15px;padding:10px 15px}
+.stat strong{font-size:18px}
+.small-note,.grade-select span{font-size:15px}
+.primary,.secondary{font-size:18px;min-height:58px;padding:13px 23px;border-radius:18px}
+.grade-btn{padding:9px 17px}
+.categories{gap:15px;margin:20px 0}
+.category{min-height:144px;padding:18px 16px;border-radius:23px;display:flex;flex-direction:column;justify-content:center}
+.category:nth-child(1){background:#fff}
+.category:nth-child(2){background:#fff8e8}
+.category:nth-child(3){background:#eff8ff}
+.category:nth-child(4){background:#f7f0ff}
+.category:nth-child(5){background:#eff8ef}
+.category:nth-child(6){background:#fff0f2}
+.category:nth-child(7){background:#f0f4ff}
+.category:nth-child(8){background:#f5f7e9}
+.category .emoji{font-size:44px;line-height:1.1;margin-bottom:10px}
+.category strong{font-size:19px;line-height:1.3}
+.category small{font-size:15px;margin-top:7px;color:#80748b;font-weight:800}
+.challenge{padding:28px}
+.step-label,.topic-pill{font-size:15px}
+.question-title{font-size:28px}
+.prompt{font-size:21px;line-height:1.75}
+.helper{font-size:16px}
+.option{font-size:19px;min-height:68px;padding:16px 18px;border-radius:19px}
+.option .opt-letter{width:32px;height:32px;font-size:15px}
+.text-answer,.open-answer,.match-row select{font-size:19px;min-height:60px}
+.hint-box,.feedback{font-size:17px;line-height:1.6}
+.parent-note{background:#fff7fb;border-color:#f1dce8}
+.parent-note summary{font-size:17px}
+.parent-note p,.parent-note li{font-size:15px}
+footer{font-size:14px}
+@media(max-width:760px){
+ body{font-size:17px}
+ .wrap{padding:12px 12px 42px}
+ .hero{padding:22px;grid-template-columns:1fr auto;gap:10px}
+ .hero-art{width:82px;height:82px;font-size:52px;border-radius:24px}
+ .hero:after{right:92px;top:7px;font-size:22px}
+ h1{font-size:32px}
+ .hero p{font-size:17px}
+ .categories{gap:10px}
+ .category{min-height:132px;padding:14px 12px;border-radius:20px}
+ .category .emoji{font-size:39px}
+ .category strong{font-size:17px}
+ .category small{font-size:14px}
+ .nav button{font-size:15px;padding:8px 11px}
+ .grade-btn{font-size:15px;padding:8px 12px}
+ .start-row{gap:10px}
+ .start-row .primary{width:100%}
+ .challenge{padding:19px}
+ .question-title{font-size:25px}
+ .prompt{font-size:19px}
+ .option{font-size:18px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">🐱</div><div>小小腦力探險隊</div></div>
+    <nav class="nav" aria-label="主要導覽">
+      <button class="active" data-view="home">今日</button>
+      <button data-view="practice">練習</button>
+      <button data-view="progress">紀錄</button>
+    </nav>
+  </header>
+
+  <section class="hero" id="hero">
+    <div><h1>一起玩，動動腦！</h1><p>每天 5 關，找線索、看規律、解開小任務。</p></div>
+    <div class="hero-art" aria-hidden="true">😺</div>
+  </section>
+
+  <main>
+    <section class="daily-panel panel" id="homeView">
+      <div class="panel-head"><h2 id="missionTitle">🐾 今天的 5 關挑戰</h2><span class="date-chip" id="todayLabel"></span></div>
+      <div class="helper">每天從不同領域抽出 5 關。小一是加強挑戰、小二維持原本難度、小三增加多步驟與跨領域推理。</div>
+      <div class="stats">
+        <div class="stat"><strong id="doneToday">0 / 5</strong>今日完成</div>
+        <div class="stat"><strong id="totalDays">0</strong>完成天數</div>
+        <div class="stat"><strong>5–10 分</strong>建議時間</div>
+      </div>
+      <div class="start-row">
+        <button class="primary" id="startDaily">開始今天的探險 →</button>
+        <span class="small-note" id="dailyNote">慢慢想，不怕答錯。</span>
+        <div class="grade-select"><span>選年級</span><button class="grade-btn active" data-grade="1">小一</button><button class="grade-btn" data-grade="2">小二</button><button class="grade-btn" data-grade="3">小三</button></div>
+      </div>
+    </section>
+
+    <section class="categories" aria-label="挑戰領域">
+      <div class="category"><span class="emoji">📝</span><strong>語文表達</strong><small>句型、排序、閱讀理解</small></div>
+      <div class="category"><span class="emoji">🔢</span><strong>數學推理</strong><small>數感、規律、生活數學</small></div>
+      <div class="category"><span class="emoji">🔍</span><strong>觀察與規律</strong><small>發現線索、找出變化</small></div>
+      <div class="category"><span class="emoji">🧩</span><strong>分類與邏輯</strong><small>條件、歸納、排除</small></div>
+      <div class="category"><span class="emoji">🗺️</span><strong>生活與空間</strong><small>方位、安排、解決問題</small></div>
+      <div class="category"><span class="emoji">🧭</span><strong>空間推理</strong><small>方格路線、旋轉、位置關係</small></div>
+      <div class="category"><span class="emoji">📊</span><strong>資料判讀</strong><small>表格、統計、時間與資訊整理</small></div>
+      <div class="category"><span class="emoji">🧪</span><strong>自然探究</strong><small>觀察、預測、公平比較</small></div>
+    </section>
+
+    <section class="challenge panel" id="challengeView" aria-live="polite">
+      <div class="challenge-top"><span class="step-label" id="stepLabel">第 1 關 / 5</span><span class="topic-pill" id="topicPill">📝 語文表達</span></div>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div class="eyebrow" id="skillLabel">句型觀察</div>
+      <h2 class="question-title" id="questionTitle"></h2>
+      <div class="prompt" id="questionPrompt"></div>
+      <div class="helper" id="questionHelper"></div>
+      <div id="answerArea"></div>
+      <div id="hintArea"></div>
+      <div class="action-row" id="actionArea"></div>
+      <div id="feedbackArea"></div>
+    </section>
+
+    <section class="finish-card panel" id="finishView">
+      <div class="finish-star">🌈</div><div class="eyebrow">MISSION COMPLETE</div>
+      <h2>今天的探險完成！</h2>
+      <p id="finishMessage">你願意觀察、思考和嘗試，這就是今天最棒的收穫。</p>
+      <button class="primary" id="backHome">回到任務首頁</button>
+      <button class="secondary" id="anotherSet">再玩一組</button>
+    </section>
+
+    <section class="progress-panel panel" id="progressView">
+      <div class="panel-head"><h2>🏅 我的探險紀錄</h2><span class="date-chip">只保存在這台裝置</span></div>
+      <div class="progress-grid">
+        <div class="progress-box"><strong id="recordDays">0</strong><span>完成天數</span></div>
+        <div class="progress-box"><strong id="recordStars">0</strong><span>累積星星</span></div>
+        <div class="progress-box"><strong id="recordStreak">0</strong><span>連續探險天數</span></div>
+      </div>
+      <h3 style="font-size:14px;margin:18px 0 10px">最近 14 天</h3><div class="history" id="historyDots"></div>
+      <p class="small-note">完成一組挑戰就會留下紀錄。答錯也可以完成任務；星星代表願意持續嘗試，不是考試分數。</p>
+      <button class="secondary" id="clearRecords">清除本機紀錄</button>
+    </section>
+
+    <details class="parent-note">
+      <summary>👨‍👩‍👧 給陪伴者的小提醒</summary>
+      <p>每天完成 5 關就很棒。遇到不會的題目，可以先看提示，再一起找線索、想方法；不必追求全對。</p>
+      
+      
+    </details>
+  </main>
+  <footer>🐾 找線索・動動腦・開心玩</footer>
+</div>
 <script>
-(async()=>{try{if(!('DecompressionStream' in window))throw new Error('請使用最新版 Chrome、Edge、Safari 或 Firefox。');const b=Uint8Array.from(atob(window.APP_GZIP),c=>c.charCodeAt(0));const stream=new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'));const html=await new Response(stream).text();const themedHtml=html.replace("</head>","\n<style id=\"kid-friendly-cat-theme\">\n:root{--kid-ink:#493d54;--kid-pink:#ffe1eb;--kid-yellow:#fff0b8;--kid-blue:#dff3ff;--kid-green:#e4f6df;--kid-purple:#eee5ff}\nhtml{font-size:19px}\nbody{font-family:\"Arial Rounded MT Bold\",\"Trebuchet MS\",system-ui,sans-serif!important;color:var(--kid-ink)!important;background:linear-gradient(145deg,#fff9ef 0%,#fff0f5 48%,#eef8ff 100%)!important;line-height:1.65!important}\nh1{font-size:clamp(2rem,5vw,3.1rem)!important;line-height:1.2!important}\nh2{font-size:clamp(1.55rem,4vw,2.2rem)!important}\nh3{font-size:clamp(1.25rem,3vw,1.65rem)!important}\np,label,.question,.prompt,.description{font-size:clamp(1.08rem,2.5vw,1.3rem)}\nbutton,[role=button],input,select{font:inherit!important}\nbutton,[role=button]{min-height:64px!important;border-radius:22px!important;font-size:clamp(1.12rem,2.8vw,1.42rem)!important;font-weight:800!important;padding:14px 22px!important;box-shadow:0 5px 0 rgba(91,68,107,.12)!important;cursor:pointer}\nbutton:active,[role=button]:active{transform:translateY(3px)!important;box-shadow:0 2px 0 rgba(91,68,107,.12)!important}\ninput,select{min-height:58px!important;border-radius:16px!important;font-size:1.15rem!important;padding:10px 14px!important}\nimg,svg{max-width:100%}\n.card,.panel,.question-card,.game-card,[class*=card],[class*=Card]{border-radius:26px!important}\nmain{padding-bottom:100px!important}\n.kitty-corner{position:fixed;z-index:9999;bottom:12px;font-size:clamp(48px,7vw,76px);line-height:1;filter:drop-shadow(0 5px 4px #b69cb477);pointer-events:none;user-select:none;animation:kitty-bob 3.2s ease-in-out infinite}\n.kitty-left{left:10px}.kitty-right{right:10px;animation-delay:-1.6s}\n.kitty-note{position:fixed;z-index:9998;top:10px;right:12px;padding:7px 13px;border-radius:20px;background:#fff0b8;border:2px solid #f5d98a;color:#72566a;font-weight:900;font-size:14px;box-shadow:0 3px 0 #e8d4b4;pointer-events:none}\n@keyframes kitty-bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-8px) rotate(4deg)}}\n@media(max-width:600px){html{font-size:17px}.kitty-corner{font-size:48px;bottom:6px}.kitty-left{left:3px}.kitty-right{right:3px}.kitty-note{font-size:12px;top:5px;right:5px}button,[role=button]{min-height:60px!important}}\n@media(prefers-reduced-motion:reduce){.kitty-corner{animation:none}}\n</style>"+"</head>").replace("</body>","<div class=\"kitty-note\" aria-hidden=\"true\">🐾 貓咪陪你闖關！</div><div class=\"kitty-corner kitty-left\" aria-hidden=\"true\">🐱</div><div class=\"kitty-corner kitty-right\" aria-hidden=\"true\">😺</div>"+"</body>");document.open();document.write(themedHtml);document.close();}catch(e){document.body.innerHTML='網站載入失敗：'+e.message;}})();
-</script></body></html>
+const BANK = {
+  language: [
+    {id:'l1',level:1,skill:'句型觀察',title:'句子換裝師',prompt:'哪一句和「小兔在草地上開心地跳舞。」的句型最接近？',type:'choice',options:['哥哥在公園裡快樂地跑步。','小狗非常可愛。','我喜歡吃蘋果。','天空藍藍的。'],answer:0,hint:'找找看，哪一句也有「誰、在哪裡、怎麼樣地做什麼」。',why:'「哥哥在公園裡快樂地跑步」和例句都有主角、地點、狀態及動作。'},
+    {id:'l2',level:1,skill:'語意理解',title:'幫句子接下去',prompt:'「雖然天空下起大雨，＿＿＿＿。」哪一句接起來最合理？',type:'choice',options:['但是我們還是穿上雨衣去上學。','所以太陽變得更大。','因為地板是藍色的。'],answer:0,hint:'「雖然……」後面通常會接一個和前面有點相反、但仍然合理的情況。',why:'「雖然下雨」和「還是穿雨衣去上學」形成轉折，前後意思連得起來。'},
+    {id:'l3',level:1,skill:'句子排序',title:'句子排排站',prompt:'把下面的詞語排成一句通順的話。\n「花園裡／蝴蝶／飛來飛去／在」',type:'order',options:['蝴蝶','在','花園裡','飛來飛去'],answer:['蝴蝶','在','花園裡','飛來飛去'],hint:'先找出「誰」，再想「在哪裡」，最後想「做什麼」。',why:'句子可以排成「蝴蝶在花園裡飛來飛去。」先找主角，再安排地點和動作。'},
+    {id:'l4',level:2,skill:'閱讀推論',title:'故事裡的小線索',prompt:'小安帶著水壺和帽子出門。走到操場時，他看到地上有很多水窪，還聽到屋簷滴滴答答。\n你覺得剛才最可能發生什麼事？',type:'choice',options:['剛下過雨。','剛下過雪。','剛發生地震。','有人在煮湯。'],answer:0,hint:'找找看，哪些線索和天氣有關？水窪、屋簷滴水可能是怎麼來的？',why:'地面有水窪、屋簷滴水，最合理的推論是剛下過雨。這是從線索推想，而不是只找題目直接寫出的答案。'},
+    {id:'l5',level:1,skill:'詞語分類',title:'找出不一樣的一個',prompt:'下面哪一個和其他三個最不一樣？\n蘋果、香蕉、紅蘿蔔、葡萄',type:'choice',options:['蘋果','香蕉','紅蘿蔔','葡萄'],answer:2,hint:'想想看：哪些是水果？哪一個通常被當成蔬菜？',why:'蘋果、香蕉和葡萄都是水果；紅蘿蔔通常歸在蔬菜。分類時要先想清楚分類的標準。'},
+    {id:'l6',level:2,skill:'句意比較',title:'哪句話說得更清楚？',prompt:'小美要表達「她先洗手，再吃點心」。哪一句最清楚？',type:'choice',options:['小美吃點心，然後洗手。','小美先洗手，再吃點心。','小美洗手，點心先吃。'],answer:1,hint:'注意「先」和「再」的順序。',why:'「先洗手，再吃點心」清楚表達事情發生的先後順序。'},
+    {id:'l7',level:2,skill:'多種表達',title:'一件事，換個說法',prompt:'哪一句和「弟弟跑得很快」的意思最接近？',type:'choice',options:['弟弟像小火箭一樣，一下子就跑到前面。','弟弟慢慢走回家。','弟弟正在看故事書。','弟弟不想參加跑步。'],answer:0,hint:'換了說法，但要保留「跑得很快」這個意思。',why:'「像小火箭一樣，一下子就跑到前面」是用不同說法表達跑得很快。'},
+    {id:'l8',level:1,skill:'語境判斷',title:'幫忙選一句',prompt:'妹妹把水打翻了，桌上都是水。哪一句最適合接著說？',type:'choice',options:['我們拿抹布把桌子擦乾淨吧！','今天的月亮好圓。','我昨天去了公園。'],answer:0,hint:'想想看，現在最需要處理的是什麼事情？',why:'回應要符合當下情境。桌上有水，先拿抹布清理最合理。'}
+  ],
+  math: [
+    {id:'m1',level:1,skill:'數字規律',title:'數字小火車',prompt:'找出規律，下一個數字是？\n2、4、6、8、？',type:'choice',options:['9','10','11','12'],answer:1,hint:'看看每次往後走，數字增加多少？',why:'每次增加 2，所以 8 再加 2 是 10。'},
+    {id:'m2',level:1,skill:'逆向思考',title:'猜猜我的數字',prompt:'我想了一個數字，加上 4 會變成 11。\n我想的是多少？',type:'text',answer:['7'],hint:'可以從 11 倒退 4 步，或想想 7 加 4 是多少。',why:'11 − 4 = 7，所以原本的數字是 7。'},
+    {id:'m3',level:2,skill:'兩步驟問題',title:'點心時間',prompt:'盒子裡原本有 14 顆草莓。吃掉 5 顆，媽媽又放進 3 顆。現在有幾顆？',type:'text',answer:['12','十二'],hint:'事情有兩個步驟：先減少，再增加。',why:'14 − 5 = 9，9 + 3 = 12。要依照事情發生的順序計算。'},
+    {id:'m4',level:1,skill:'比較大小',title:'誰拿得比較多？',prompt:'小宇有 17 張貼紙，小晴有 13 張。小宇比小晴多幾張？',type:'choice',options:['3 張','4 張','5 張','30 張'],answer:1,hint:'題目問的是「相差多少」，不是把兩個數字加起來。',why:'17 − 13 = 4，所以小宇多 4 張。'},
+    {id:'m5',level:2,skill:'規則推理',title:'數字加工機',prompt:'一台神奇機器會把數字變大：\n輸入 2 → 輸出 5\n輸入 4 → 輸出 7\n輸入 6 → 輸出 9\n輸入 8 → 輸出多少？',type:'text',answer:['11','十一'],hint:'比較輸入和輸出，機器每次都做了同一件事。',why:'每個數字都加 3，因此 8 + 3 = 11。'},
+    {id:'m6',level:2,skill:'條件推理',title:'排隊買冰淇淋',prompt:'小杰排在小美前面，小美排在小凱前面。誰排在最後面？',type:'choice',options:['小杰','小美','小凱'],answer:2,hint:'把三個人的位置寫成一列：前面 → 後面。',why:'順序是小杰、小美、小凱，因此小凱在最後面。'},
+    {id:'m7',level:1,skill:'數量分配',title:'公平分點心',prompt:'有 12 顆餅乾，平均分給 3 個人，每個人可以拿到幾顆？',type:'choice',options:['3 顆','4 顆','5 顆','9 顆'],answer:1,hint:'平均分配就是每個人拿到一樣多。可以一人一顆輪流分。',why:'12 顆平均分給 3 人：12 ÷ 3 = 4，每人 4 顆。'},
+    {id:'m8',level:2,skill:'數字組合',title:'找出可能的數字',prompt:'兩個數字加起來是 10，而且其中一個數字是 6。另一個數字是多少？',type:'text',answer:['4','四'],hint:'兩個數字合起來是 10，已經有 6，還差多少？',why:'10 − 6 = 4。可以用減法倒推，也可以用加法驗算。'}
+  ],
+  pattern: [
+    {id:'p1',level:1,skill:'交替規律',title:'圖形接龍',prompt:'🔺 🔵 🔺 🔵 🔺 ？\n下一個圖形是什麼？',type:'choice',options:['🔺 三角形','🔵 圓形','🟩 正方形'],answer:1,hint:'觀察圖形是不是兩個一組、輪流出現。',why:'三角形、圓形交替出現，所以接下來是圓形。'},
+    {id:'p2',level:2,skill:'雙重規律',title:'兩個線索一起看',prompt:'看數字和圖形：\n1 ⭐、2 ⭐⭐、3 ⭐⭐⭐、4 ？\n第四組應該有幾顆星星？',type:'choice',options:['2 顆','3 顆','4 顆','5 顆'],answer:2,hint:'前面的數字和星星數量有什麼關係？',why:'每一組的星星數量和前面的數字相同，第四組有 4 顆星星。'},
+    {id:'p3',level:1,skill:'數量變化',title:'越來越多',prompt:'每一排都比前一排多 1 個圓點。\n第一排 2 個、第二排 3 個、第三排 4 個，第四排有幾個？',type:'text',answer:['5','五'],hint:'從 2 開始，每次增加 1。',why:'2、3、4，每次多 1 個，所以下一個是 5。'},
+    {id:'p4',level:2,skill:'找出錯誤規律',title:'哪裡不對勁？',prompt:'有人說這串數字每次都加 2：\n3、5、7、10、11\n哪個數字不符合規律？',type:'choice',options:['5','7','10','11'],answer:2,hint:'從 3 開始，每次加 2，應該會得到哪些數字？',why:'正確序列應是 3、5、7、9、11，因此 10 不符合每次加 2 的規律。'},
+    {id:'p5',level:1,skill:'形狀分類',title:'找出共同點',prompt:'🍎 🍐 🍊 🥕\n如果要把前三個放在一起，分類規則最可能是什麼？',type:'choice',options:['都是紅色的','都是水果','都是圓形','都是長長的'],answer:1,hint:'想想看，前三個東西在生活中通常被歸在哪一類。',why:'蘋果、梨子、橘子都是水果。分類要找出共同特徵。'},
+    {id:'p6',level:2,skill:'規律轉換',title:'換個角度找規則',prompt:'這串數字：1、2、4、5、7、8、？\n下一個數字是？',type:'choice',options:['9','10','11','12'],answer:1,hint:'不是每次都加一樣多。看看增加的步數是不是輪流出現。',why:'增加的步數是 +1、+2、+1、+2、+1，因此下一次 +2，8 + 2 = 10。'},
+    {id:'p7',level:1,skill:'圖形規律',title:'顏色排排站',prompt:'🟡 🟡 🟢 🟡 🟡 🟢 🟡 🟡 ？\n下一個顏色是？',type:'choice',options:['🟡 黃色','🟢 綠色','🔵 藍色'],answer:1,hint:'每三個圖形會重複一次。',why:'規律是黃、黃、綠；接在兩個黃色後面的是綠色。'},
+    {id:'p8',level:2,skill:'開放規律',title:'看懂別人設計的規律',prompt:'小貓排了一串數字：2、4、6、8、？。牠每次都做同一件事，下一個數字是哪個？',type:'choice',options:['9','10','11','12'],answer:1,hint:'看看每次增加多少。',why:'每次增加 2，所以 8 再加 2 是 10。'}
+  ],
+  logic: [
+    {id:'g1',level:1,skill:'條件分類',title:'哪些會飛？',prompt:'選出「會飛，而且不是鳥」的動物。\n（可以選兩個）',type:'multi',options:['蝙蝠','蝴蝶','麻雀','兔子'],answer:[0,1],hint:'要同時符合兩個條件：會飛、不是鳥。',why:'蝙蝠和蝴蝶都會飛，但都不是鳥。麻雀雖然會飛，卻是鳥。'},
+    {id:'g2',level:2,skill:'比較推理',title:'誰最高？',prompt:'小明比小華高，小華比小美高。\n三個人當中，誰最高？',type:'choice',options:['小明','小華','小美'],answer:0,hint:'把身高從高到矮排成一列。',why:'小明 > 小華 > 小美，所以最高的是小明。'},
+    {id:'g3',level:1,skill:'找共同特徵',title:'誰可以住在水裡？',prompt:'選出適合生活在水裡的兩個動物。',type:'multi',options:['金魚','海豚','松鼠','長頸鹿'],answer:[0,1],hint:'想想看，哪些動物主要在水中生活？',why:'金魚和海豚都生活在水中；松鼠和長頸鹿主要生活在陸地。'},
+    {id:'g4',level:2,skill:'多重條件',title:'神祕寶物',prompt:'寶物藏在一個盒子裡。\n線索：不是紅色盒子、不是最大的盒子，而且是藍色的。\n哪個盒子是寶物？',type:'choice',options:['🔴 紅色小盒','🔵 藍色小盒','🟡 黃色大盒','🟢 綠色中盒'],answer:1,hint:'先找出符合「藍色」的盒子，再檢查其他條件。',why:'只有藍色小盒符合「藍色、不是紅色、不是最大的盒子」三個條件。'},
+    {id:'g5',level:1,skill:'排除法',title:'誰忘了帶雨傘？',prompt:'小安、小樂、小米都出門了。\n小安有雨傘，小樂有雨衣，小米兩樣都沒有。\n誰最需要趕快找地方躲雨？',type:'choice',options:['小安','小樂','小米'],answer:2,hint:'比較三個人各自有什麼可以擋雨。',why:'小米沒有雨傘也沒有雨衣，所以最需要先找地方躲雨。'},
+    {id:'g6',level:2,skill:'順序推理',title:'比賽排第幾？',prompt:'跑步比賽中，小凱比小玲早到，小玲比小恩早到。\n誰第二個到終點？',type:'choice',options:['小凱','小玲','小恩'],answer:1,hint:'把三個人的到達順序排出來。',why:'順序是小凱第一、小玲第二、小恩第三。'},
+    {id:'g7',level:1,skill:'分類標準',title:'找出不同的一組',prompt:'哪一組全部都是文具？',type:'choice',options:['鉛筆、橡皮擦、尺','鉛筆、蘋果、尺','書包、香蕉、橡皮擦'],answer:0,hint:'每一組都要檢查，不能只看到其中一樣是文具。',why:'第一組的三樣物品都是文具；其他組混入水果或非文具。'},
+    {id:'g8',level:2,skill:'開放推理',title:'讓紙不碰到桌面',prompt:'桌上有一張紙、一支筆和一個杯子。哪個方法可以讓紙不直接碰到桌面？',type:'choice',options:['把紙放在倒扣的杯子上。','把紙攤平在桌面上。','把紙揉成一團放在桌面上。','把紙壓在桌面下。'],answer:0,hint:'想想看，能不能利用杯子把紙架高？',why:'把紙放在倒扣的杯子上，就能讓紙和桌面隔開。'}
+  ],
+  life: [
+    {id:'s1',level:1,skill:'生活順序',title:'出門前要做什麼？',prompt:'下雨天要去上學，下面哪一個順序最合理？',type:'choice',options:['先整理書包 → 穿鞋 → 最後穿雨衣出門','穿雨衣 → 整理書包 → 再找襪子','出門後才回家找書包'],answer:0,hint:'想想看，哪些事情要先準備好，才能最後出門？',why:'先整理書包、穿好鞋子，最後穿上雨衣再出門，比較不會把雨衣弄濕或弄亂。'},
+    {id:'s2',level:2,skill:'時間安排',title:'安排小小行程',prompt:'現在是下午 3 點。小安要先寫 20 分鐘作業，再休息 10 分鐘。\n他幾點可以開始休息？',type:'choice',options:['下午 3:10','下午 3:20','下午 3:30'],answer:1,hint:'從 3 點開始，先往後數 20 分鐘。',why:'3:00 + 20 分鐘 = 3:20，所以 3:20 開始休息。'},
+    {id:'s3',level:1,skill:'空間方位',title:'轉彎小高手',prompt:'你面向北方，先向右轉，再向右轉。\n現在面向哪個方向？',type:'choice',options:['北方','南方','東方','西方'],answer:1,hint:'面向北方時，右邊是東方。再向右轉一次會轉到哪裡？',why:'北 → 右轉東 → 再右轉南，所以最後面向南方。'},
+    {id:'s4',level:2,skill:'條件規劃',title:'野餐要帶什麼？',prompt:'明天會下雨，而且要在戶外走一小段路。選出最需要帶的兩樣物品。',type:'multi',options:['雨傘','雨衣','太陽眼鏡','游泳圈'],answer:[0,1],hint:'先看天氣，再想哪些東西能讓走路時不容易淋濕。',why:'雨傘和雨衣都能擋雨。其他物品不符合這次的主要需求。'},
+    {id:'s5',level:1,skill:'解決問題',title:'水灑出來了',prompt:'水杯打翻，桌上有一灘水。你應該先做什麼？',type:'choice',options:['拿抹布擦乾','把書放進水裡','假裝沒看到'],answer:0,hint:'先處理眼前最需要解決的事情，也要注意不要讓東西弄濕。',why:'先拿抹布擦乾水，才能避免書本或其他物品被弄濕，也比較安全。'},
+    {id:'s6',level:2,skill:'路線規劃',title:'走最短的路',prompt:'家、圖書館和公園都在同一條東西向道路上。家在圖書館西邊，公園在圖書館東邊。\n如果從家裡往東走到公園，中間會經過哪個地方？',type:'choice',options:['圖書館','學校','便利商店'],answer:0,hint:'把「家 → 圖書館 → 公園」排在同一條線上。',why:'家在圖書館西邊，公園在東邊，所以從家往東到公園會經過圖書館。'},
+    {id:'s7',level:1,skill:'工具選擇',title:'選對工具',prompt:'想把一張紙剪成兩半，最適合使用哪一樣工具？',type:'choice',options:['湯匙','剪刀','牙刷','尺'],answer:1,hint:'想想看，哪一種工具是用來剪東西的？',why:'剪刀是適合剪紙的工具；選工具時要先想清楚要完成什麼任務。'},
+    {id:'s8',level:2,skill:'開放解決問題',title:'安全搬書小幫手',prompt:'你和朋友要把 8 本書從客廳搬到書架，哪個方法比較安全又有效率？',type:'choice',options:['每次搬 2 本，走穩後放好，再回來拿下一批。','一次抱起 8 本，遮住眼睛也沒關係。','把書一本一本丟到書架。','邊跑邊搬，越快越好。'],answer:0,hint:'同時想想安全、視線和來回次數。',why:'每次搬少量的書，保持視線清楚並穩穩走，比較安全。'}
+  ]
+};
+
+// 第二版擴充題庫：小一採用小二程度為主的挑戰題；小三加入多步驟、資料判讀與跨領域推理。
+BANK.language.push(
+ {id:'l9',level:2,skill:'句型拆解',title:'句子零件研究所',prompt:'「妹妹在圖書館安靜地看故事書。」\n這句話裡，哪一部分表示「在哪裡」？',type:'choice',options:['妹妹','在圖書館','安靜地','看故事書'],answer:1,hint:'找出人物做事情的地點。',why:'「在圖書館」說明事情發生的地點。先拆出句子中的人物、地點、狀態和動作，就更容易照樣造句。'},
+ {id:'l10',level:2,skill:'連接詞推理',title:'選對連接詞',prompt:'小雨帶了水壺，＿＿＿走到操場時還是覺得口渴。\n哪個詞最適合？',type:'choice',options:['但是','因為','所以','如果'],answer:0,hint:'前後兩件事有一點出乎意料：帶了水壺，卻仍然口渴。',why:'「但是」表示轉折，能連接前後意思。'},
+ {id:'l11',level:2,skill:'語句改寫',title:'換個方式說',prompt:'哪一句保留了「今天風很大，我們沒有去放風箏」的意思，而且用了「因為……所以……」？',type:'choice',options:['因為今天風很大，所以我們沒有去放風箏。','因為我們去放風箏，所以今天風很大。','今天風很大，但是我們去買風箏。','如果今天風很大，我們就去游泳。'],answer:0,hint:'先找出原因，再找出結果。',why:'風很大是原因，沒有去放風箏是結果。'},
+ {id:'l12',level:3,skill:'段落推論',title:'替故事找線索',prompt:'小晴走進教室，發現桌上有一張卡片，旁邊放著一盒彩色筆。卡片上寫著「祝你今天順利！」\n哪個推論最合理？',type:'choice',options:['有人可能想替小晴加油。','小晴一定忘了帶書包。','教室今天要停電。','彩色筆已經全部用完。'],answer:0,hint:'把卡片上的祝福和旁邊的彩色筆一起想想。',why:'祝福卡片通常是鼓勵或打氣，這是根據情境線索做出的合理推論；但不能確定是誰放的。'},
+ {id:'l13',level:3,skill:'找出矛盾',title:'哪一句和前面不一致？',prompt:'小明說：「我今天全程都待在家裡。」\n但他的日記寫著：「下午三點，我和爸爸到公園騎腳踏車。」\n哪個地方出現矛盾？',type:'choice',options:['他說待在家裡，日記卻寫到公園。','他和爸爸一起活動。','活動時間是下午三點。','他有寫日記。'],answer:0,hint:'比較「全程都待在家裡」和日記記錄的地點。',why:'兩段資訊互相衝突：如果下午去了公園，就不是全程待在家裡。'},
+ {id:'l14',level:3,skill:'多條件表達',title:'把條件放進一句話',prompt:'哪一句同時用到「先……再……」和「因為……所以……」？',type:'choice',options:['因為明天要早起，所以我先整理書包，再準備睡覺。','我先整理書包，再去睡覺。','因為下雨，所以我帶雨傘。','先吃早餐，再穿鞋子。'],answer:0,hint:'檢查句子裡是不是兩組語句都出現了。',why:'第一句同時包含原因結果，以及先後順序兩種關係。'},
+ {id:'l15',level:3,skill:'詞語關係',title:'找出相同的關係',prompt:'「雨傘」可以遮雨，就像「太陽眼鏡」可以＿＿＿。',type:'choice',options:['保護眼睛','讓天空下雨','裝水','量出長度'],answer:0,hint:'先想雨傘的用途，再找出另一個物品的用途。',why:'題目比較的是「物品和用途」的關係。雨傘用來遮雨，太陽眼鏡用來減少陽光對眼睛的刺激。'},
+ {id:'l16',level:3,skill:'句子排序與因果',title:'把事情排成合理順序',prompt:'依照事情發生的先後排序：\nA. 地面慢慢乾了\nB. 雨停了\nC. 烏雲飄來，下起大雨',type:'order',options:['A. 地面慢慢乾了','B. 雨停了','C. 烏雲飄來，下起大雨'],answer:[2,1,0],hint:'先下雨，接著雨停，最後地面才會慢慢乾。',why:'合理順序是 C → B → A。排序時要想清楚前一件事會如何影響下一件事。'}
+);
+BANK.math.push(
+ {id:'m9',level:2,skill:'兩步驟計算',title:'文具店任務',prompt:'鉛筆一枝 8 元，橡皮擦一個 5 元。小安買 2 枝鉛筆和 1 個橡皮擦，付 30 元。應找回多少元？',type:'text',answer:['9','九','9元'],hint:'先算買東西一共花多少，再用付出的錢減掉花費。',why:'8 × 2 + 5 = 21 元；30 − 21 = 9 元。'},
+ {id:'m10',level:2,skill:'估算與檢查',title:'答案合理嗎？',prompt:'一本書有 48 頁，小宇每天看 10 頁左右，想知道大約幾天能看完。哪個估計最合理？',type:'choice',options:['大約 2 天','大約 5 天','大約 12 天','大約 50 天'],answer:1,hint:'把 48 想成接近 50，再估計 50 ÷ 10。',why:'48 頁接近 50 頁，50 ÷ 10 約是 5 天。估算不一定要精確，但要合理。'},
+ {id:'m11',level:2,skill:'數字組合',title:'找出所有可能',prompt:'兩個不同的整數相加等於 12，而且兩個數字都大於 3。下面哪一組符合條件？',type:'choice',options:['3 和 9','5 和 7','2 和 10','6 和 6'],answer:1,hint:'檢查兩件事：加起來是不是 12？兩個數字是不是不同而且都大於 3？',why:'5 + 7 = 12，兩個數字不同，也都大於 3。'},
+ {id:'m12',level:3,skill:'餘數推理',title:'分糖果的小問題',prompt:'有 23 顆糖果，每個袋子裝 5 顆。請分別配對：最多裝滿幾袋？最後剩幾顆？',type:'match',pairs:[{left:'最多裝滿幾袋？',choices:['3 袋','4 袋','5 袋'],answer:1},{left:'最後剩幾顆？',choices:['2 顆','3 顆','4 顆'],answer:1}],hint:'先找出 5 的倍數中不超過 23 的最大數，再算剩下多少。',why:'5 × 4 = 20，23 − 20 = 3，所以裝滿 4 袋，剩下 3 顆。'},
+ {id:'m13',level:3,skill:'多步驟時間',title:'電影幾點結束？',prompt:'電影下午 1:35 開始，全長 1 小時 25 分鐘，中間沒有休息。電影幾點結束？',type:'text',answer:['3:00','下午3:00','15:00','三點','下午三點'],hint:'先加 1 小時，再加 25 分鐘。',why:'1:35 + 1 小時 = 2:35；再加 25 分鐘是 3:00。'},
+ {id:'m14',level:3,skill:'周長推理',title:'圍住小花圃',prompt:'一個長方形花圃長 8 公尺、寬 5 公尺。沿著四周圍一圈繩子，至少需要幾公尺？',type:'text',answer:['26','26公尺','二十六公尺','二十六'],hint:'長方形有兩條長邊和兩條短邊，把四條邊加起來。',why:'8 + 5 + 8 + 5 = 26 公尺，也就是（8 + 5）× 2。'},
+ {id:'m15',level:3,skill:'條件與組合',title:'排出不同的組合',prompt:'用 1、2、3 三張數字卡排成一個三位數，每張卡只能用一次。哪個數字最大？',type:'choice',options:['321','312','231','213'],answer:0,hint:'要讓三位數最大，先把最大的數字放在百位。',why:'百位先放 3，十位放 2，個位放 1，得到 321。'},
+ {id:'m16',level:3,skill:'規律反推',title:'倒著找規則',prompt:'一台機器先把輸入的數字乘以 2，再減去 3。輸出是 17，原本輸入多少？',type:'text',answer:['10','十'],hint:'倒著做：先把 17 加回 3，再除以 2。',why:'17 + 3 = 20，20 ÷ 2 = 10。反向思考時，把原本的步驟倒過來做。'}
+);
+BANK.pattern.push(
+ {id:'p9',level:2,skill:'雙步驟規律',title:'數字跳跳格',prompt:'4、7、13、16、22、25、？\n找出規律，下一個數字是？',type:'text',answer:['31','三十一'],hint:'觀察相鄰兩個數字的差：增加的數字有沒有輪流？',why:'差距依序是 +3、+6、+3、+6、+3，下一次加 6，25 + 6 = 31。'},
+ {id:'p10',level:2,skill:'找出規律錯誤',title:'誰走錯一步？',prompt:'規律是每次乘以 2：\n2、4、8、16、30、64\n哪個數字不符合？',type:'choice',options:['8','16','30','64'],answer:2,hint:'把前一個數字乘以 2，看看下一個應該是多少。',why:'16 × 2 = 32，因此 30 不符合；正確序列應是 2、4、8、16、32、64。'},
+ {id:'p11',level:2,skill:'圖形數量',title:'點點三角形',prompt:'第一層有 1 個點，第二層有 2 個點，第三層有 3 個點。依照這個方式排成四層，一共有幾個點？',type:'text',answer:['10','十'],hint:'把每一層的點數加起來：1 + 2 + 3 + 4。',why:'四層共有 1 + 2 + 3 + 4 = 10 個點。'},
+ {id:'p12',level:3,skill:'交錯規律',title:'兩條規律輪流出現',prompt:'1、10、3、20、5、30、7、？\n下一個數字是？',type:'text',answer:['40','四十'],hint:'把奇數位置和偶數位置分開觀察。',why:'奇數位置是 1、3、5、7；偶數位置是 10、20、30、40。所以下一個是 40。'},
+ {id:'p13',level:3,skill:'圖形矩陣',title:'找出缺少的圖形',prompt:'每一列都依序出現：○、△、□。\n第一列：○ △ □\n第二列：○ △ □\n第三列：○ △ ？',type:'choice',options:['○','△','□','☆'],answer:2,hint:'看每一列的排列是不是相同。',why:'三列都依序為圓形、三角形、正方形，因此缺少的是正方形。'},
+ {id:'p14',level:3,skill:'規律設計',title:'找出兩條交錯的規律',prompt:'數字依序是：1、5、2、6、3、7、？。前後兩組數字各自有規律，下一個數字是？',type:'choice',options:['4','8','9','10'],answer:0,hint:'把第 1、3、5 個位置的數字放在一起看，再看第 2、4、6 個位置。',why:'奇數位置是 1、2、3、4；偶數位置是 5、6、7，因此下一個奇數位置是 4。'},
+ {id:'p15',level:3,skill:'分類規則切換',title:'換規則重新分組',prompt:'有紅色圓形、藍色圓形、紅色三角形、藍色三角形。先依顏色分類，再改依形狀分類。第二次分組後，每組會有幾個？',type:'text',answer:['2','兩個','2個'],hint:'依形狀分成圓形一組、三角形一組。',why:'兩個圓形一組、兩個三角形一組，所以每組各有 2 個。'},
+ {id:'p16',level:3,skill:'觀察與推論',title:'找出下一個圖形組',prompt:'🌙 ⭐ ⭐｜🌙 ⭐ ⭐｜🌙 ⭐ ？\n每組有相同的排列，最後缺少什麼？',type:'choice',options:['🌙 月亮','⭐ 星星','☀️ 太陽'],answer:1,hint:'前兩組各有一個月亮和兩顆星星。',why:'每組都是一個月亮接兩顆星星，所以最後還缺一顆星星。'}
+);
+BANK.logic.push(
+ {id:'g9',level:2,skill:'多條件排除',title:'誰拿到哪張卡？',prompt:'小安、小文、小傑各拿一張不同顏色的卡：紅、黃、藍。小安不是紅色，小文拿藍色。小傑拿哪一張？',type:'choice',options:['紅色','黃色','藍色'],answer:0,hint:'藍色已經是小文的，小安又不是紅色，先把可能選項排掉。',why:'小文拿藍色；小安不能拿紅色，所以小安拿黃色，剩下紅色就是小傑的。'},
+ {id:'g10',level:2,skill:'必然與可能',title:'哪件事一定是真的？',prompt:'盒子裡有紅球 3 顆、藍球 2 顆。閉著眼睛拿出 1 顆，下面哪句話一定正確？',type:'choice',options:['拿到紅球','拿到藍球','拿到紅球或藍球','拿到綠球'],answer:2,hint:'把盒子裡所有可能出現的顏色都列出來。',why:'盒子裡只有紅球和藍球，因此拿到其中一種顏色是一定的；無法保證是哪一種。'},
+ {id:'g11',level:2,skill:'順序條件',title:'誰在中間？',prompt:'甲比乙早到，丙比乙晚到。三人都沒有同時到達。誰在中間？',type:'choice',options:['甲','乙','丙'],answer:1,hint:'把「早到」和「晚到」的關係排成順序。',why:'順序是甲、乙、丙，所以乙在中間。'},
+ {id:'g12',level:3,skill:'真假推理',title:'誰說了真話？',prompt:'三個盒子只有一個有寶物。\n紅盒說：「寶物在紅盒。」\n藍盒說：「寶物不在紅盒。」\n綠盒說：「寶物在紅盒或綠盒。」\n已知三句話只有一句是真的。寶物在哪個盒子？',type:'choice',options:['紅盒','藍盒','綠盒'],answer:1,hint:'分別假設寶物在紅、藍、綠盒，檢查三句話會有幾句是真的。',why:'寶物在藍盒時，紅盒的話是假、藍盒的話是真、綠盒的話是假，剛好只有一句真話。'},
+ {id:'g13',level:3,skill:'組合與限制',title:'安排座位',prompt:'小明、小華、小美坐成一排。小明不能坐最左邊，小美坐在小華的右邊。哪個座位順序符合條件？',type:'choice',options:['小明、小華、小美','小華、小美、小明','小美、小明、小華'],answer:1,hint:'先找出小華和小美的相對位置，再檢查小明不能坐最左邊。',why:'小華、小美、小明符合小美在小華右邊，而且小明不在最左邊。'},
+ {id:'g14',level:3,skill:'找最少資訊',title:'還缺哪個線索？',prompt:'桌上有三個不透明袋子，分別裝蘋果、梨子、橘子，每袋只裝一種。袋子沒有標籤。只看外面完全分不出來。要確定每袋內容，最直接的方法是？',type:'choice',options:['隨便猜一個','逐袋打開確認','只看袋子大小','把袋子排成一列'],answer:1,hint:'題目說外面看不出來，想想哪種行動能直接取得內容資訊。',why:'逐袋打開才能直接確認內容。這題在練習判斷目前資訊是否足夠。'},
+ {id:'g15',level:3,skill:'關係推理',title:'誰養哪種寵物？',prompt:'小安、小柏、小晴各養一種不同寵物：貓、魚、兔子。小安不養魚，小柏養兔子。小晴養什麼？',type:'choice',options:['貓','魚','兔子'],answer:1,hint:'兔子已經是小柏的；再看小安不養魚。',why:'小柏養兔子，剩下貓和魚給小安、小晴；小安不養魚，所以小安養貓，小晴養魚。'},
+ {id:'g16',level:3,skill:'反向推理',title:'從結果找回起點',prompt:'小米想了一個數字，先加 5，再乘以 2，結果是 26。原來的數字是多少？',type:'text',answer:['8','八'],hint:'倒著還原：先把 26 除以 2，再減去 5。',why:'26 ÷ 2 = 13，13 − 5 = 8。倒推時要按照相反順序做相反的運算。'}
+);
+BANK.life.push(
+ {id:'s9',level:2,skill:'時間規劃',title:'排出合理行程',prompt:'下午 4:00 開始做功課，需要 25 分鐘；接著整理書包 10 分鐘。全部完成是幾點幾分？',type:'text',answer:['4:35','下午4:35','16:35'],hint:'先加 25 分鐘，再加 10 分鐘。',why:'4:00 + 25 分鐘 = 4:25，再加 10 分鐘是 4:35。'},
+ {id:'s10',level:2,skill:'安全判斷',title:'找出比較安全的做法',prompt:'雨後走廊有一小灘水，地面可能很滑。哪個做法比較安全？',type:'choice',options:['慢慢走，避開積水並提醒老師','在水上跑步','推同學看看會不會滑倒','閉著眼睛快走'],answer:0,hint:'想想看，怎樣做能減少滑倒的機會？',why:'慢慢走、避開積水並提醒大人，是比較安全的處理方式。'},
+ {id:'s11',level:2,skill:'資源分配',title:'分配遊戲時間',prompt:'有 30 分鐘可以玩兩種遊戲。積木至少玩 10 分鐘，桌遊至少玩 5 分鐘。下面哪個安排符合條件？',type:'choice',options:['積木 8 分鐘、桌遊 22 分鐘','積木 15 分鐘、桌遊 15 分鐘','積木 20 分鐘、桌遊 15 分鐘','積木 5 分鐘、桌遊 25 分鐘'],answer:1,hint:'檢查兩個遊戲是否都達到最少時間，而且合計正好 30 分鐘。',why:'15 + 15 = 30，積木超過 10 分鐘、桌遊超過 5 分鐘，符合所有條件。'},
+ {id:'s12',level:3,skill:'多步驟路線',title:'依照線索找路',prompt:'你從學校出發，先往東走到公園，再往北走到圖書館。圖書館位於公園的哪個方向？',type:'choice',options:['東方','西方','南方','北方'],answer:3,hint:'第二段路是從公園往哪個方向走？',why:'從公園往北走到圖書館，所以圖書館在公園北方。'},
+ {id:'s13',level:3,skill:'工作分配',title:'怎麼分工比較有效率？',prompt:'四個人要整理 12 本書，並把書依照大小分成三類。哪個分工方式較有效率？',type:'choice',options:['四個人都只整理同一本書','先一起確認分類標準，再分工整理不同大小的書','每個人都用不同標準分類','先把書藏起來再找'],answer:1,hint:'多人合作時，先有共同規則，再分工比較不容易分類混亂。',why:'先確認共同的分類標準，才能讓每個人的整理結果一致，再分工會更有效率。'},
+ {id:'s14',level:3,skill:'條件規劃',title:'安排雨天活動',prompt:'戶外活動因為下雨取消。大家有 40 分鐘，可以在教室完成一項活動。要讓 4 組平均分配分享時間，每組至少 5 分鐘，還要保留 10 分鐘整理。每組最多可以分享幾整分鐘？',type:'text',answer:['7','7分鐘','七分鐘'],hint:'先從 40 分鐘扣掉整理的 10 分鐘，再把剩下的時間平均分給 4 組。',why:'40 − 10 = 30 分鐘；30 ÷ 4 = 7.5 分鐘。若以整分鐘安排，每組最多 7 分鐘，還會剩 2 分鐘。'},
+ {id:'s15',level:3,skill:'生活資訊判斷',title:'看懂活動規則',prompt:'遊戲規則寫著：每人最多拿 2 張卡；拿到星星卡加 3 分，月亮卡加 1 分。小文拿了 2 張星星卡和 1 張月亮卡。哪裡不符合規則？',type:'choice',options:['拿卡總數超過 2 張','星星卡加分太少','月亮卡不能拿','小文沒有得分'],answer:0,hint:'先算他拿了幾張卡，再對照「每人最多」的限制。',why:'小文拿了 3 張卡，超過每人最多 2 張的限制。'},
+ {id:'s16',level:3,skill:'比較方案',title:'選擇最合適的方案',prompt:'要把 18 本書從教室搬到隔壁教室。一次最多安全拿 3 本。下面哪個方案最少需要幾趟？',type:'text',answer:['6','六','6趟','六趟'],hint:'每趟最多 3 本，想想 18 本裡面有幾組 3 本。',why:'18 ÷ 3 = 6，所以最少需要 6 趟。'}
+);
+
+BANK.space = [
+ {id:'x1',level:2,skill:'方格路線',title:'小機器人走格子',prompt:'機器人從起點出發：先向右走 2 格，再向上走 1 格。它總共走了幾格？',type:'text',answer:['3','三','3格'],hint:'把向右走的格數和向上走的格數加起來。',why:'2 + 1 = 3 格。方向改變了，但總格數就是兩段路的格數相加。'},
+ {id:'x2',level:2,skill:'方向轉換',title:'轉身再轉身',prompt:'你面向西方，向左轉 90 度，再向左轉 90 度。最後面向哪裡？',type:'choice',options:['北方','南方','東方','西方'],answer:2,hint:'面向西時，左邊是南；再左轉一次會朝哪裡？',why:'西 → 左轉南 → 再左轉東，所以最後面向東方。'},
+ {id:'x3',level:3,skill:'位置關係',title:'誰在誰的哪一邊？',prompt:'小明面向北方，小華站在小明的右邊，小美站在小明的左邊。在地圖上，小華位於小美的哪個方向？',type:'choice',options:['東方','西方','南方','北方'],answer:0,hint:'面向北方時，右邊是東、左邊是西。',why:'小華在東邊，小美在西邊；所以小華在小美的東方。'},
+ {id:'x4',level:3,skill:'立體觀察',title:'盒子的相對面',prompt:'一個正方體盒子有前、後、左、右、上、下六個面。前面和後面相對。左面和哪個面相對？',type:'choice',options:['右面','上面','下面','前面'],answer:0,hint:'正方體相對的面是成對的：前後、左右、上下。',why:'左面和右面相對。這題要把立體物體的六個面想成三組相對面。'},
+ {id:'x5',level:3,skill:'路徑反推',title:'走回起點',prompt:'小狗從家出發，向北走 3 公尺，再向東走 4 公尺。要先回到出發點原本的東西向位置，再往南回家，第一步應該先往哪個方向？',type:'choice',options:['向南','向北','向東','向西'],answer:3,hint:'要回到家，方向要和剛才走過的方向相反。',why:'先向西走回到原本的東西位置，再向南走回家；第一步應向西。'},
+ {id:'x6',level:3,skill:'鏡像觀察',title:'左右顛倒了嗎？',prompt:'把英文字母卡片放在鏡子前，鏡子會讓字卡看起來左右相反。下面哪種情況最容易看出左右反轉？',type:'choice',options:['字母 A 左右對稱','箭頭 →','圓形 ○','正方形 □'],answer:1,hint:'找一個原本有明確左右方向、鏡像後會改變方向的圖形。',why:'箭頭有明確的方向，照鏡子後會呈現相反方向；左右對稱的圖形比較不容易看出差異。'},
+ {id:'x7',level:3,skill:'路線規劃',title:'比較兩條路線',prompt:'從起點到終點有兩條路：路線甲先走 4 格再走 3 格；路線乙走 5 格再走 1 格。哪條路比較短？',type:'choice',options:['路線甲','路線乙','一樣長'],answer:1,hint:'分別把每條路的格數加起來，再比較。',why:'甲是 4 + 3 = 7 格；乙是 5 + 1 = 6 格，所以乙比較短。'},
+ {id:'x8',level:3,skill:'空間描述',title:'選出正確的路線',prompt:'要從起點走到終點，而且途中至少轉彎兩次。哪條路線符合要求？',type:'choice',options:['向右 3 格，再向上 2 格，最後向左 1 格。','向右 3 格，再向右 2 格。','向上 4 格，再向上 1 格。','向左 2 格，停在原地。'],answer:0,hint:'數一數方向改變了幾次。',why:'第一條路線先向右、再向上、最後向左，途中轉彎兩次。'},
+ {id:'x9',level:2,skill:'方向與步數',title:'小隊員送信',prompt:'你面向北方，先向右轉，再向前走 3 步；接著向左轉，再向前走 2 步。最後你面向哪個方向？',type:'choice',options:['北方','南方','東方','西方'],answer:0,hint:'向右轉和向左轉各一次，方向會回到原來的方向；前進步數不會改變面向。',why:'先向右轉面向東，再向左轉回北方。走幾步不影響當時面向的方向。'},
+ {id:'x10',level:2,skill:'方格距離',title:'走了幾格？',prompt:'棋子從起點出發，向右走 4 格，再向上走 2 格。總共走了幾格？',type:'text',answer:['6','六','6格'],hint:'把兩段路線的格數加起來。',why:'4 + 2 = 6 格。'},
+ {id:'x11',level:2,skill:'位置描述',title:'找出相鄰位置',prompt:'在方格地圖上，圖書館在公園的正北方。從公園走到圖書館，應該往哪個方向？',type:'choice',options:['北方','南方','東方','西方'],answer:0,hint:'「正北方」就是地圖上方。',why:'圖書館在公園正北方，所以從公園往北走。'},
+ {id:'x12',level:2,skill:'方向配對',title:'方向小配對',prompt:'把面向北方時的轉向，和轉完後面對的方向配在一起。',type:'match',pairs:[{left:'向右轉 90 度',choices:['東方','西方','南方'],answer:0},{left:'向左轉 90 度',choices:['東方','西方','南方'],answer:1},{left:'向後轉 180 度',choices:['東方','西方','南方'],answer:2}],hint:'面向北方時，右邊是東、左邊是西，後面是南。',why:'面向北方，右轉朝東、左轉朝西、向後轉朝南。'},
+];
+BANK.data = [
+ {id:'d1',level:2,skill:'表格判讀',title:'小小圖書館',prompt:'今天借書紀錄：\n小安 3 本、小文 5 本、小晴 2 本。\n誰借得最多？',type:'choice',options:['小安','小文','小晴'],answer:1,hint:'比較三個人的借書數量。',why:'小文借了 5 本，比 3 本和 2 本都多。'},
+ {id:'d2',level:2,skill:'資料比較',title:'多了幾個？',prompt:'星期一回收 12 個寶特瓶，星期二回收 19 個。星期二比星期一多幾個？',type:'text',answer:['7','七','7個'],hint:'題目問相差多少，用比較兩天數量的方式想。',why:'19 − 12 = 7 個。'},
+ {id:'d3',level:3,skill:'表格綜合',title:'運動會得分榜',prompt:'紅隊 18 分、藍隊 23 分、黃隊 20 分。\n三隊總分是多少？',type:'text',answer:['61','61分','六十一','六十一分'],hint:'把紅隊、藍隊和黃隊的分數全部加起來。',why:'18 + 23 + 20 = 61 分。'},
+ {id:'d4',level:3,skill:'時間表判讀',title:'公車時刻表',prompt:'公車每 20 分鐘一班，第一班上午 8:10 發車。接下來兩班分別是幾點？',type:'choice',options:['8:20、8:30','8:30、8:50','8:30、9:10','8:40、9:00'],answer:1,hint:'從 8:10 開始，每次往後加 20 分鐘。',why:'8:10 + 20 分鐘 = 8:30；再加 20 分鐘是 8:50。'},
+ {id:'d5',level:3,skill:'資料整理',title:'找出最多的類別',prompt:'班上最喜歡的水果調查：蘋果 8 人、香蕉 6 人、橘子 8 人、葡萄 4 人。哪兩種水果並列最多？',type:'multi',options:['蘋果','香蕉','橘子','葡萄'],answer:[0,2],hint:'找出數字最大的類別；注意可能不只一個。',why:'蘋果和橘子都是 8 人，並列最多。'},
+ {id:'d6',level:3,skill:'平均分配',title:'平均分隊',prompt:'24 位同學平均分成 4 隊，每隊幾人？',type:'text',answer:['6','六','6人'],hint:'把 24 個人平均分成 4 組。',why:'24 ÷ 4 = 6，每隊 6 人。'},
+ {id:'d7',level:3,skill:'資料查核',title:'哪一個結論不正確？',prompt:'圖書館本週借閱：故事書 30 本、科普書 18 本、漫畫 25 本。哪個說法不正確？',type:'choice',options:['故事書借得最多','科普書比漫畫少','漫畫比故事書多','三類都有人借'],answer:2,hint:'逐句用題目中的數字檢查，不要只憑感覺。',why:'漫畫 25 本，故事書 30 本；漫畫沒有比故事書多。'},
+ {id:'d8',level:3,skill:'資料推論',title:'從資料找答案',prompt:'一週天氣記錄：晴天 3 天、雨天 2 天、陰天 2 天。哪個問題可以直接用這些資料回答？',type:'choice',options:['這一週晴天有幾天？','哪一天的氣溫最高？','明天會不會下雨？','這一週誰去旅行？'],answer:0,hint:'題目問的事情，必須已經出現在記錄裡。',why:'資料中有晴天的天數，因此可以直接回答晴天有幾天。'},
+ {id:'d9',level:2,skill:'關係配對',title:'幫物品找到分類',prompt:'把每個物品和最適合的類別配在一起。',type:'match',pairs:[{left:'蘋果',choices:['水果','交通工具','文具'],answer:0},{left:'公車',choices:['水果','交通工具','文具'],answer:1},{left:'鉛筆',choices:['水果','交通工具','文具'],answer:2}],hint:'想想看，每個東西通常屬於哪一類。',why:'蘋果是水果、公車是交通工具、鉛筆是文具。配對時要逐一確認。'},
+ {id:'d10',level:2,skill:'資料比較',title:'誰收集得比較多？',prompt:'小組回收紙張：第一組 14 張，第二組 18 張，第三組 11 張。哪一組比第一組多 4 張？',type:'choice',options:['第一組','第二組','第三組'],answer:1,hint:'從第一組的 14 張往上加 4 張。',why:'14 + 4 = 18，所以是第二組。'},
+ {id:'d11',level:2,skill:'資料加總',title:'整理午餐票數',prompt:'同學最喜歡的午餐：雞肉飯 7 票、咖哩飯 5 票、義大利麵 6 票。總共有幾票？',type:'text',answer:['18','十八','18票'],hint:'把三種午餐的票數加起來。',why:'7 + 5 + 6 = 18 票。'},
+ {id:'d12',level:2,skill:'條件判讀',title:'找到符合條件的月份',prompt:'小日記記錄：四月 30 天、五月 31 天、六月 30 天。哪兩個月的天數一樣？',type:'multi',options:['四月','五月','六月'],answer:[0,2],hint:'比較每個月份的天數，找出數字相同的月份。',why:'四月和六月都是 30 天。'},
+ {id:'d13',level:2,skill:'順序與資訊',title:'活動開始時間',prompt:'手作活動 9:20 開始，老師說 10 分鐘後才開始發材料。幾點可以開始拿材料？',type:'text',answer:['9:30','上午9:30','09:30'],hint:'從 9:20 往後加 10 分鐘。',why:'9:20 + 10 分鐘 = 9:30。'}
+];
+BANK.science = [
+ {id:'c1',level:2,skill:'因果推論',title:'植物需要什麼？',prompt:'兩盆一樣的植物放在同一個地方，一盆每天澆水，另一盆完全不澆水。幾天後，哪個現象比較可能發生？',type:'choice',options:['沒澆水的植物比較容易枯萎','兩盆一定長得完全一樣','澆水的植物一定變成紅色','植物不需要陽光和水'],answer:0,hint:'想想看，植物生長需要哪些基本條件？',why:'水是植物生長需要的條件之一，長期不澆水比較容易枯萎。'},
+ {id:'c2',level:2,skill:'公平比較',title:'怎樣比較比較公平？',prompt:'想知道哪種紙吸水比較多。下面哪個實驗方式比較公平？',type:'choice',options:['兩種紙滴相同滴數的水，再比較','一種紙滴 2 滴，另一種滴 10 滴','一種紙先揉皺，另一種保持平整','每次都換不同大小的紙'],answer:0,hint:'比較兩種紙時，除了紙的種類，其他條件最好相同。',why:'用相同大小的紙、相同滴數和相同方式測試，才能比較紙張種類造成的差異。'},
+ {id:'c3',level:3,skill:'控制變因',title:'找出實驗中改變的條件',prompt:'小明想比較兩種紙船哪一種在水面上漂得久。他使用同一個水盆、同樣多的水和同樣大小的紙船，只改變紙的種類。這個實驗主要改變了什麼？',type:'choice',options:['水盆大小','水量','紙的種類','紙船大小'],answer:2,hint:'找出實驗中唯一刻意改變的條件。',why:'水盆、水量和紙船大小都保持相同，只有紙的種類不同。'},
+ {id:'c4',level:3,skill:'根據證據推論',title:'冰塊去哪裡了？',prompt:'兩個一樣大的冰塊，一個放在陽光下，一個放在陰涼處。十分鐘後，陽光下的冰塊比較小。哪個解釋最合理？',type:'choice',options:['陽光下比較暖，冰塊融化得較快','陰涼處的冰塊變成石頭','陽光把冰塊吹走了','兩個冰塊原本大小不同'],answer:0,hint:'比較兩個地方的溫度，以及冰遇熱會發生什麼變化。',why:'溫度較高時，冰通常融化得比較快。這個推論是依據觀察到的大小變化和環境差異。'},
+ {id:'c5',level:3,skill:'預測與驗證',title:'先預測，再找證據',prompt:'把一顆球放在斜坡上，放手後球會往下滾。若把斜坡變得更陡，想知道球會不會滾得更快，最好的做法是？',type:'choice',options:['只測一次就下結論','使用同一顆球，改變斜坡角度並重複測量','同時換球、換斜坡和換地面','只問朋友覺得哪個比較快'],answer:1,hint:'一次只改變主要條件，並重複觀察，結果才比較可靠。',why:'固定球和地面，只調整斜坡角度，重複測量時間，才能比較坡度和速度的關係。'},
+ {id:'c6',level:3,skill:'分類與材料',title:'選擇適合的材料',prompt:'要做一艘能短時間浮在水面的玩具船，下面哪種材料最適合先拿來測試？',type:'choice',options:['容易吸水的衛生紙','完整的保麗龍塊','會溶於水的糖','鬆散的麵粉'],answer:1,hint:'先考慮材料會不會吸水，以及能不能保持形狀。',why:'保麗龍較不容易吸水，也能維持形狀，適合先做浮水測試；實際設計仍要透過測試確認。'},
+ {id:'c7',level:3,skill:'觀察紀錄',title:'哪個紀錄最有用？',prompt:'想比較三種植物一週長高多少，最有用的紀錄方式是？',type:'choice',options:['只記得哪盆看起來最漂亮','每天用同一把尺測量並記錄高度','只拍一張照片不記日期','請每個人猜哪盆長得最快'],answer:1,hint:'比較變化，需要有開始和後續的數字，而且測量方式要一致。',why:'固定時間、固定方法測量高度並留下紀錄，才能比較一週內的生長變化。'},
+ {id:'c8',level:3,skill:'設計探究',title:'自己設計一個小實驗',prompt:'你想知道紙飛機的機翼寬度會不會影響飛行距離。請說說你會怎麼做，至少提到一個要保持相同的條件。',type:'open',hint:'想想看：哪些事情要固定？哪一件事是你想改變和比較的？',example:'用同一種紙、同一個人從同一條線投擲，只改變機翼寬度，每種飛機試飛三次並記錄距離。',why:'好的比較要先說清楚想改變什麼、哪些條件保持相同，以及如何記錄結果。'},
+ {id:'c9',level:2,skill:'公平比較',title:'比一比哪個海綿吸水多',prompt:'想比較兩塊海綿哪一塊吸水比較多，除了海綿種類之外，哪件事最好保持一樣？',type:'multi',options:['海綿大小','倒入的水量','測試的容器','海綿顏色'],answer:[0,1,2],hint:'比較時要盡量讓其他條件相同，避免結果受到別的因素影響。',why:'海綿大小、倒入的水量和容器都應盡量一致；顏色不是這個測試的重要條件。'},
+ {id:'c10',level:2,skill:'物質分類',title:'哪些東西會流動？',prompt:'選出通常可以流動、會隨容器形狀改變的兩種物質。',type:'multi',options:['水','空氣','石頭','木頭'],answer:[0,1],hint:'想想看，哪些東西可以流進瓶子或從瓶口流出？',why:'水和空氣都能流動；石頭和木頭通常保持固定形狀。'},
+ {id:'c11',level:2,skill:'觀察與預測',title:'影子變長了嗎？',prompt:'下午太陽慢慢接近地平線，站在戶外的人影通常會怎麼變化？',type:'choice',options:['通常變長','一定消失','一定變成圓形','完全不變'],answer:0,hint:'太陽位置較低時，光線照射的角度也會改變。',why:'太陽位置較低時，影子通常會拉長；實際影子也會受到地面和周圍遮擋影響。'},
+ {id:'c12',level:2,skill:'工具選擇',title:'選對測量工具',prompt:'想知道一段跑步用了幾秒鐘，最適合使用哪一種工具？',type:'choice',options:['尺','碼表','溫度計','量杯'],answer:1,hint:'題目要測量的是時間，不是長度、溫度或容量。',why:'碼表用來測量時間，適合記錄跑步用了幾秒。'}
+];
+
+
+BANK.language.push(
+ {id:'l17',level:1,skill:'量詞辨識',title:'量詞小偵探',prompt:'哪一句的量詞用得最恰當？',type:'choice',options:['一匹小魚','一條小魚','一顆小魚','一雙小魚'],answer:1,hint:'想想看，魚通常用哪個量詞來計算。',why:'「一條小魚」是自然又常見的說法。'},
+ {id:'l18',level:1,skill:'標點符號',title:'標點符號來幫忙',prompt:'「小明問媽媽幾點回家」這句話的句尾，最適合用哪個符號？',type:'choice',options:['。','？','！','、'],answer:1,hint:'這是一句在詢問事情的話。',why:'問句的句尾通常使用問號。'},
+ {id:'l19',level:2,skill:'閱讀通知',title:'看懂小通知',prompt:'通知寫著：「星期三帶水壺，星期五帶彩色筆。」今天是星期三，應該帶什麼？',type:'choice',options:['水壺','彩色筆','雨傘','球拍'],answer:0,hint:'先看今天是星期幾，再對照通知。',why:'通知說星期三要帶水壺。'},
+ {id:'l20',level:3,skill:'短文推論',title:'小芽長出來了',prompt:'小安把種子放進土裡，每天澆水。幾天後，他看到土裡冒出一個小芽。哪個說法最合理？',type:'choice',options:['種子可能已經開始發芽。','種子一定變成了石頭。','小芽是昨天才放進土裡的。','植物完全不需要水。'],answer:0,hint:'把每天澆水和後來看到小芽這兩件事連起來想。',why:'種子在適合的條件下可能發芽，這是根據觀察到的小芽做出的合理推論。'}
+);
+BANK.math.push(
+ {id:'m17',level:1,skill:'數字組合',title:'補上缺少的數字',prompt:'7 加上多少會變成 10？',type:'choice',options:['2','3','4','5'],answer:1,hint:'從 7 再往後數到 10。',why:'7 + 3 = 10。'},
+ {id:'m18',level:1,skill:'加法比較',title:'哪一組剛好是 12？',prompt:'下面哪一組數字加起來剛好是 12？',type:'choice',options:['5 和 7','4 和 5','6 和 7','3 和 6'],answer:0,hint:'把每一組的兩個數字加起來比較。',why:'5 + 7 = 12。'},
+ {id:'m19',level:2,skill:'生活計算',title:'點心買得剛剛好',prompt:'小安有 20 元，買麵包 8 元和牛奶 7 元，還剩下多少元？',type:'choice',options:['3 元','5 元','7 元','15 元'],answer:1,hint:'先算兩樣點心一共多少錢，再用 20 元扣掉。',why:'8 + 7 = 15，20 − 15 = 5 元。'},
+ {id:'m20',level:3,skill:'數字排列',title:'數字卡的差距',prompt:'用 2、4、7 三張數字卡各一次，排出最大的三位數和最小的三位數。兩個數相差多少？',type:'choice',options:['495','485','475','395'],answer:0,hint:'先排出 742 和 247，再用大數減小數。',why:'最大是 742，最小是 247；742 − 247 = 495。'}
+);
+BANK.pattern.push(
+ {id:'p17',level:1,skill:'圖案交替',title:'小貓的腳印',prompt:'🐱 🐾 🐱 🐾 🐱 ？\n下一個圖案是什麼？',type:'choice',options:['🐱 小貓','🐾 腳印','⭐ 星星'],answer:1,hint:'小貓和腳印輪流出現。',why:'圖案是小貓、腳印交替，所以接著是腳印。'},
+ {id:'p18',level:1,skill:'數字規律',title:'數字跳兩步',prompt:'1、3、5、？\n下一個數字是？',type:'choice',options:['6','7','8','9'],answer:1,hint:'看看每次增加多少。',why:'每次增加 2，5 再加 2 是 7。'},
+ {id:'p19',level:2,skill:'交錯規律',title:'兩個步伐輪流走',prompt:'數字是：2、5、4、7、6、9、？\n下一個數字是？',type:'choice',options:['7','8','10','12'],answer:1,hint:'增加的數字不是固定的，看看「加 3、減 1」是不是輪流出現。',why:'規律是 +3、−1、+3、−1、+3、−1，所以 9 − 1 = 8。'},
+ {id:'p20',level:3,skill:'雙序列推理',title:'拆成兩列找答案',prompt:'4、6、5、7、6、8、？\n把奇數位置和偶數位置分開觀察，下一個數字是？',type:'choice',options:['7','8','9','10'],answer:0,hint:'第 1、3、5 個數字是一列；第 2、4、6 個數字是另一列。',why:'奇數位置是 4、5、6，下一個是 7；偶數位置是 6、7、8。'}
+);
+BANK.logic.push(
+ {id:'g17',level:1,skill:'分類判斷',title:'找出不是水果的朋友',prompt:'下面哪一個通常不會被分類成水果？',type:'choice',options:['蘋果','葡萄','紅蘿蔔','香蕉'],answer:2,hint:'想想看，哪一個通常會放在蔬菜區？',why:'紅蘿蔔通常被分類為蔬菜，其他三個都是水果。'},
+ {id:'g18',level:1,skill:'條件分類',title:'陸地動物找一找',prompt:'選出兩種主要在陸地生活的動物。',type:'multi',options:['貓','狗','金魚','海豚'],answer:[0,1],hint:'想想看，哪些動物平常在地面活動？',why:'貓和狗主要在陸地生活；金魚和海豚主要在水中生活。'},
+ {id:'g19',level:2,skill:'條件推理',title:'找出中間的數字卡',prompt:'桌上有 2、4、6 三張數字卡。小貓拿的不是最大，也不是最小。牠拿到哪一張？',type:'choice',options:['2','4','6'],answer:1,hint:'先排出數字由小到大的順序。',why:'2 最小、6 最大，剩下中間的數字是 4。'},
+ {id:'g20',level:3,skill:'真假話推理',title:'誰帶了球？',prompt:'小安、小文和小晴之中，只有一個人帶了球。\n小安說：「我沒帶球。」\n小文說：「小安帶了球。」\n小晴說：「小文沒帶球。」\n如果三人之中只有一個人說真話，誰帶了球？',type:'choice',options:['小安','小文','小晴'],answer:1,hint:'分別假設球在三個人手上，看看每個人的話會變成真還是假。',why:'只有小文帶球時，小安說真話，小文和小晴說假話，剛好只有一句真話。'}
+);
+BANK.life.push(
+ {id:'s17',level:1,skill:'生活順序',title:'出門前準備好',prompt:'準備出門時，下面哪個順序比較合理？',type:'choice',options:['整理好書包 → 穿鞋 → 出門','出門 → 才整理書包 → 找鞋子','先把鞋子收起來 → 再出門'],answer:0,hint:'想想看，哪些事情要在離開家以前完成。',why:'先整理書包、穿好鞋子，再出門比較不會忘東忘西。'},
+ {id:'s18',level:1,skill:'安全判斷',title:'熱湯旁邊要小心',prompt:'桌上剛放了一碗熱湯，哪個做法比較安全？',type:'choice',options:['先等大人放好，再小心移動','伸手快速把碗拉過來','在桌邊追跑玩耍','用手摸湯看看熱不熱'],answer:0,hint:'熱湯可能燙傷，先注意距離並請大人幫忙。',why:'熱湯很燙，先讓大人放穩，再小心使用比較安全。'},
+ {id:'s19',level:2,skill:'時間安排',title:'休息時間到了嗎？',prompt:'下午 2:15 開始閱讀，讀 25 分鐘後就休息。幾點開始休息？',type:'choice',options:['2:30','2:35','2:40','2:45'],answer:2,hint:'從 2:15 往後加 25 分鐘。',why:'2:15 + 25 分鐘 = 2:40。'},
+ {id:'s20',level:3,skill:'條件規劃',title:'安排剛剛好的時間',prompt:'一共有 18 分鐘，要安排閱讀、收拾和休息。閱讀至少 10 分鐘、收拾至少 5 分鐘、休息至少 3 分鐘。哪個安排剛好符合所有條件？',type:'choice',options:['閱讀 10 分、收拾 5 分、休息 3 分','閱讀 8 分、收拾 7 分、休息 3 分','閱讀 10 分、收拾 4 分、休息 4 分','閱讀 12 分、收拾 5 分、休息 3 分'],answer:0,hint:'檢查每一項是否達到最少時間，也要確認加起來是 18 分鐘。',why:'10 + 5 + 3 = 18，而且三項都達到各自的最低時間。'}
+);
+BANK.space.push(
+ {id:'x13',level:1,skill:'方向辨識',title:'左邊是哪裡？',prompt:'你面向東方，左手邊是哪個方向？',type:'choice',options:['北方','南方','東方','西方'],answer:0,hint:'面向東方時，左手邊就是地圖上的哪一側？',why:'面向東方時，左邊是北方。'},
+ {id:'x14',level:1,skill:'路線計數',title:'機器人走幾格？',prompt:'機器人先向右走 2 格，再向上走 1 格。總共走了幾格？',type:'choice',options:['2 格','3 格','4 格','5 格'],answer:1,hint:'把兩段路的格數加起來。',why:'2 + 1 = 3 格。'},
+ {id:'x15',level:1,skill:'圖形旋轉',title:'轉一轉還是一樣',prompt:'把圖形轉 90 度，哪一個圖形轉完後看起來和原來一樣？',type:'choice',options:['正方形','長方形','箭頭 →','字母 L'],answer:0,hint:'想想看，哪個圖形四個方向都一樣？',why:'正方形旋轉 90 度後，外形仍然相同。'},
+ {id:'x16',level:1,skill:'位置關係',title:'誰在中間？',prompt:'桌上由左到右是：書本、杯子、湯匙。哪個物品在中間？',type:'choice',options:['書本','杯子','湯匙'],answer:1,hint:'從左到右依序看三個物品。',why:'杯子排在書本和湯匙中間。'},
+ {id:'x17',level:1,skill:'方向轉換',title:'箭頭轉彎了',prompt:'箭頭原本朝上，向右轉 90 度後會朝哪裡？',type:'choice',options:['←','→','↑','↓'],answer:1,hint:'想像把箭頭順時針轉四分之一圈。',why:'朝上的箭頭向右轉 90 度後會朝右。'},
+ {id:'x18',level:2,skill:'方向與步數',title:'機器人送信',prompt:'機器人面向北方，先向前走 3 格，再向右轉走 2 格。最後面向哪個方向？',type:'choice',options:['北方','南方','東方','西方'],answer:2,hint:'走路的格數不會改變面向；真正改變方向的是轉彎。',why:'機器人原本面向北方，向右轉後面向東方。'},
+ {id:'x19',level:2,skill:'路線比較',title:'哪條路比較短？',prompt:'從起點到終點有兩條路：甲走 3 格再走 2 格；乙走 2 格再走 2 格。哪條路比較短？',type:'choice',options:['甲比較短','乙比較短','一樣長'],answer:1,hint:'分別把兩段路的格數加起來。',why:'甲共 5 格，乙共 4 格，所以乙比較短。'},
+ {id:'x20',level:3,skill:'最短路徑',title:'走到終點最少幾步？',prompt:'在方格地圖上，起點在左下角，終點在右上角。只能向右或向上走；需要向右 3 格、向上 2 格。最少要走幾格？',type:'choice',options:['4 格','5 格','6 格','7 格'],answer:1,hint:'不需要繞路，把向右和向上的格數加起來就好。',why:'3 + 2 = 5 格。'}
+);
+BANK.data.push(
+ {id:'d14',level:1,skill:'數量比較',title:'誰得到最多星星？',prompt:'小組星星數：小安 4 顆、小文 2 顆、小晴 5 顆。誰得到最多？',type:'choice',options:['小安','小文','小晴'],answer:2,hint:'比較三個數字，找出最大的。',why:'5 顆最多，所以是小晴。'},
+ {id:'d15',level:1,skill:'資料判讀',title:'看懂小記錄',prompt:'週一借書 3 本，週二借書 4 本。哪一天借得比較多？',type:'choice',options:['週一','週二','一樣多'],answer:1,hint:'比較 3 和 4 哪個比較大。',why:'週二借了 4 本，比週一的 3 本多。'},
+ {id:'d16',level:1,skill:'資料加總',title:'水果票數加起來',prompt:'蘋果有 4 票、香蕉有 3 票、橘子有 2 票。總共有幾票？',type:'choice',options:['7 票','8 票','9 票','10 票'],answer:2,hint:'把三種水果的票數加起來。',why:'4 + 3 + 2 = 9 票。'},
+ {id:'d17',level:1,skill:'資料比較',title:'哪兩種一樣多？',prompt:'蘋果 3 票、梨子 2 票、香蕉 3 票、葡萄 1 票。選出票數一樣多的兩種水果。',type:'multi',options:['蘋果','梨子','香蕉','葡萄'],answer:[0,2],hint:'找出數字相同的兩個類別。',why:'蘋果和香蕉都是 3 票。'},
+ {id:'d18',level:2,skill:'資料比較',title:'借書差幾本？',prompt:'甲班借了 8 本書，乙班借了 5 本書。甲班比乙班多幾本？',type:'choice',options:['2 本','3 本','4 本','13 本'],answer:1,hint:'題目問相差多少，用比較兩個數量的方式想。',why:'8 − 5 = 3 本。'},
+ {id:'d19',level:2,skill:'資料查核',title:'哪個說法正確？',prompt:'三個小隊收集瓶蓋：紅隊 12 個、藍隊 15 個、綠隊 15 個。哪個說法正確？',type:'choice',options:['紅隊最多','藍隊和綠隊一樣多','綠隊比藍隊多','三隊都一樣多'],answer:1,hint:'逐一比較三隊的數字，注意是否有並列。',why:'藍隊和綠隊都是 15 個，並列最多。'},
+ {id:'d20',level:3,skill:'資料綜合',title:'三隊總共有多少分？',prompt:'紅隊 12 分、藍隊 15 分、綠隊 9 分。三隊合計幾分？',type:'choice',options:['34 分','35 分','36 分','37 分'],answer:2,hint:'將三隊分數全部加起來。',why:'12 + 15 + 9 = 36 分。'}
+);
+BANK.science.push(
+ {id:'c13',level:1,skill:'植物觀察',title:'植物需要什麼？',prompt:'想讓盆栽健康生長，下面哪一項是重要條件？',type:'choice',options:['適量的水和陽光','每天放進冰箱','完全不需要水','一直把葉子剪光'],answer:0,hint:'回想照顧植物時，通常需要做哪些事。',why:'植物通常需要適當的水、陽光和合適的生長環境。'},
+ {id:'c14',level:1,skill:'材料觀察',title:'磁鐵喜歡誰？',prompt:'選出兩種通常會被磁鐵吸引的物品。',type:'multi',options:['鐵製迴紋針','鐵釘','木筷子','塑膠尺'],answer:[0,1],hint:'想想看，哪些物品含有鐵？',why:'鐵製迴紋針和鐵釘通常會被磁鐵吸引；木頭和塑膠不會。'},
+ {id:'c15',level:1,skill:'物質變化',title:'冰塊去哪裡了？',prompt:'把冰塊放在室溫的桌上，過一段時間最可能看到什麼？',type:'choice',options:['冰塊慢慢融化成水','冰塊變成木頭','冰塊自己長大','冰塊變成沙子'],answer:0,hint:'想想看，冰離開冷凍庫後會受到什麼影響。',why:'室溫通常比冰塊高，冰會逐漸融化成水。'},
+ {id:'c16',level:1,skill:'工具選擇',title:'量量看有多熱',prompt:'想知道水有幾度，最適合使用哪一種工具？',type:'choice',options:['溫度計','尺','量杯','碼表'],answer:0,hint:'題目要知道的是冷熱程度。',why:'溫度計是用來測量溫度的工具。'},
+ {id:'c17',level:1,skill:'影子觀察',title:'影子躲在哪裡？',prompt:'有光照向一個不透明的玩具，玩具後方通常會出現什麼？',type:'choice',options:['影子','彩虹','雪花','水泡'],answer:0,hint:'光被物體擋住時，後方會有什麼現象？',why:'不透明物體會擋住部分光線，後方可能形成影子。'},
+ {id:'c18',level:2,skill:'公平比較',title:'紙飛機比賽',prompt:'想比較兩種紙飛機飛得多遠，哪種做法比較公平？',type:'choice',options:['都用同樣大小的紙、同一條起點線，由同一人投擲','一架從高處丟，另一架從地面丟','一架用大張紙，另一架用小張紙','每次都換不同的人投擲'],answer:0,hint:'除了想比較的設計差異，其他條件盡量保持相同。',why:'使用相同紙張大小、起點和投擲者，才能較公平地比較設計差異。'},
+ {id:'c19',level:2,skill:'觀察與推論',title:'從觀察找原因',prompt:'同樣大小的冰塊，一個放在陽光下，一個放在陰涼處。陽光下的冰塊先變小，哪個推論最合理？',type:'choice',options:['陽光下可能比較暖，冰融化較快','陰涼處一定沒有空氣','陽光把冰塊變成石頭','兩個冰塊一定原本不同大小'],answer:0,hint:'把放置的位置和冰塊大小的變化連起來想。',why:'陽光下通常較暖，冰塊可能融化得較快；這是根據觀察提出的合理推論。'},
+ {id:'c20',level:3,skill:'控制變因',title:'怎樣測試比較可靠？',prompt:'想知道不同高度的斜坡會不會影響球滾下來的時間，哪種測試方式最可靠？',type:'choice',options:['使用同一顆球和同一條路面，只改變斜坡高度並重複測量','每次都換球、換路面和換斜坡','只測一次，憑感覺猜結果','讓不同的人在不同地點隨意放球'],answer:0,hint:'想知道斜坡高度的影響，就要盡量固定其他條件。',why:'固定球和路面，只改變斜坡高度並重複測量，較能確認高度是否造成差異。'}
+);
+
+const CATS=[
+  {key:'language',label:'語文表達',emoji:'📝'},
+  {key:'math',label:'數學推理',emoji:'🔢'},
+  {key:'pattern',label:'觀察與規律',emoji:'🔍'},
+  {key:'logic',label:'分類與邏輯',emoji:'🧩'},
+  {key:'life',label:'生活與空間',emoji:'🗺️'},
+  {key:'space',label:'空間推理',emoji:'🧭'},
+  {key:'data',label:'資料判讀',emoji:'📊'},
+  {key:'science',label:'自然探究',emoji:'🧪'}
+];
+const $=s=>document.querySelector(s);
+const STORE='little-brain-adventure-v2';
+let saved=loadSaved();let grade=1,mode='daily',tasks=[],taskIndex=0,selected=[],selectedMatches=[],attempts=0,hintShown=false,openSubmitted=false;
+function loadSaved(){try{const current=localStorage.getItem(STORE);if(current)return JSON.parse(current)||{days:{},totalStars:0};const legacy=localStorage.getItem('little-brain-adventure-v1');if(legacy){const old=JSON.parse(legacy)||{days:{},totalStars:0};old.assignments=old.assignments||{};old.usedByGrade=old.usedByGrade||{};localStorage.setItem(STORE,JSON.stringify(old));return old;}return {days:{},totalStars:0,assignments:{},usedByGrade:{}};}catch(e){return {days:{},totalStars:0,assignments:{},usedByGrade:{}};}}
+function saveSaved(){try{localStorage.setItem(STORE,JSON.stringify(saved));}catch(e){/* 瀏覽器停用本機儲存時仍可正常遊玩，只是不保留紀錄。 */}}
+function updateCategoryCounts(){document.querySelectorAll('.category').forEach((el,i)=>{const cat=CATS[i];const count=(BANK[cat.key]||[]).length;const small=el.querySelector('small');if(small)small.textContent=count+' 題';});}
+function dateKey(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
+function dateIndex(key){const [y,m,d]=key.split('-').map(Number);return Math.floor(Date.UTC(y,m-1,d)/86400000);}
+function prettyDate(){return new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'long',day:'numeric',weekday:'long'}).format(new Date());}
+function todayState(){return saved.days[dateKey()]||{done:false,stars:0,completed:0,doneIds:[]};}
+const GRADE1_CHALLENGE_IDS=new Set(['l4','l6','m5','m6','p2','p4','g4','g6','s2','s4','x18','x19','d18','d19','c18','c19']);
+function eligiblePool(cat, targetGrade){
+  const bank=BANK[cat.key]||[];
+  if(targetGrade===1)return bank.filter(q=>q.level===1||GRADE1_CHALLENGE_IDS.has(q.id));
+  if(targetGrade===2){const standard=bank.filter(q=>q.level===2);return standard.length?standard:bank.filter(q=>q.level===1);}
+  const advanced=bank.filter(q=>q.level===3);return advanced.length?advanced:bank.filter(q=>q.level>=2);
+}
+function dailyCategories(dayNumber){
+  // 8 個領域中每天挑 5 個，固定輪替但排列不固定，讓一週內能接觸不同領域。
+  const stride=3, start=dayNumber% CATS.length;
+  return Array.from({length:5},(_,i)=>CATS[(start+i*stride)%CATS.length]);
+}
+function dailySet(){
+  const n=dateIndex(dateKey());saved.assignments=saved.assignments||{};saved.usedByGrade=saved.usedByGrade||{};
+  const assignmentKey=`${dateKey()}-v3-g${grade}`;
+  const byId=new Map(CATS.flatMap(c=>BANK[c.key]).map(q=>[q.id,q]));
+  if(saved.assignments[assignmentKey]){const existing=saved.assignments[assignmentKey].map(id=>byId.get(id)).filter(Boolean);if(existing.length===5)return existing;}
+  const cats=dailyCategories(n),used=saved.usedByGrade[grade]||{};
+  const chosen=cats.map((c,i)=>{const pool=eligiblePool(c,grade);used[c.key]=used[c.key]||[];let fresh=pool.filter(q=>!used[c.key].includes(q.id));if(!fresh.length){used[c.key]=[];fresh=pool;}const q=fresh[(n*3+i*5)%fresh.length];used[c.key].push(q.id);return q;});
+  saved.usedByGrade[grade]=used;saved.assignments[assignmentKey]=chosen.map(q=>q.id);const keys=Object.keys(saved.assignments).sort();if(keys.length>60)keys.slice(0,keys.length-60).forEach(k=>delete saved.assignments[k]);saveSaved();return chosen;
+}
+function randomSet(){const cats=dailyCategories(dateIndex(dateKey())+Math.floor(Math.random()*8));return cats.map(c=>{const pool=eligiblePool(c,grade);return pool[Math.floor(Math.random()*pool.length)];}).sort(()=>Math.random()-.5);}
+function refreshHome(){const st=todayState();$('#todayLabel').textContent=prettyDate();$('#doneToday').textContent=`${Math.min(5,(st.doneIds||[]).length||st.completed||0)} / 5`;
+  $('#totalDays').textContent=Object.values(saved.days).filter(x=>x.done).length;
+  $('#dailyNote').textContent=st.done?'今天已經完成，想再玩可以去自由練習！':'完成五關就收工，不必追求全對。';
+  $('#startDaily').textContent=st.done?'再看一次今日任務 →':'開始今天的探險 →';}
+function showView(view){$('#challengeView').classList.remove('show');$('#finishView').classList.remove('show');$('#progressView').classList.remove('show');$('#homeView').classList.toggle('hidden',view==='progress');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='progress'){renderProgress();$('#progressView').classList.add('show');}else if(view==='practice'){startRun('practice');}else{refreshHome();}}
+function startRun(which){mode=which;tasks=which==='daily'?dailySet():randomSet();taskIndex=0;$('#homeView').classList.remove('hidden');$('#progressView').classList.remove('show');$('#finishView').classList.remove('show');$('#challengeView').classList.add('show');renderTask();$('#challengeView').scrollIntoView({behavior:'smooth',block:'start'});}
+function renderTask(){const q=tasks[taskIndex];selected=[];selectedMatches=[];attempts=0;hintShown=false;openSubmitted=false;
+  $('#stepLabel').textContent=`第 ${taskIndex+1} 關 / ${tasks.length}`;$('#topicPill').textContent=`${CATS.find(c=>BANK[c.key].some(x=>x.id===q.id)).emoji} ${CATS.find(c=>BANK[c.key].some(x=>x.id===q.id)).label}`;
+  $('#skillLabel').textContent=q.skill;$('#questionTitle').textContent=q.title;$('#questionPrompt').textContent=q.prompt;$('#questionHelper').textContent=q.level===3?'🚀 小小進階任務：試著整理步驟，並說明理由。':q.level===2?'✨ 挑戰一下：先看懂規則，再試著自己完成。':'🌱 慢慢想，找找看題目給了什麼線索。';$('#progressBar').style.width=`${taskIndex/tasks.length*100}%`;
+  $('#hintArea').innerHTML='';$('#feedbackArea').innerHTML='';
+  const area=$('#answerArea');area.innerHTML='';
+  if(q.type==='choice'||q.type==='multi'){
+    const list=document.createElement('div');list.className='options';q.options.forEach((v,i)=>{const b=document.createElement('button');b.className='option';b.innerHTML=`<span class="opt-letter">${String.fromCharCode(65+i)}</span><span>${v}</span>`;b.dataset.index=i;b.addEventListener('click',()=>{if(q.type==='choice'){selected=[i];}else{selected=selected.includes(i)?selected.filter(x=>x!==i):[...selected,i];}renderOptions();});list.appendChild(b);});area.appendChild(list);
+  }else if(q.type==='text'){
+    const inp=document.createElement('input');inp.className='text-answer';inp.id='answerInput';inp.type='text';inp.autocomplete='off';inp.placeholder='把答案寫在這裡';area.appendChild(inp);
+  }else if(q.type==='open'){
+    const ta=document.createElement('textarea');ta.className='open-answer';ta.id='answerInput';ta.placeholder='寫下你的想法，也可以先說給家人聽……';area.appendChild(ta);
+  }else if(q.type==='match'){
+    const grid=document.createElement('div');grid.className='match-grid';grid.id='matchGrid';
+    q.pairs.forEach((pair,i)=>{const row=document.createElement('div');row.className='match-row';const label=document.createElement('strong');label.textContent=pair.left;const sel=document.createElement('select');sel.dataset.index=i;const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='選擇配對';sel.appendChild(placeholder);pair.choices.forEach((choice,j)=>{const opt=document.createElement('option');opt.value=String(j);opt.textContent=choice;sel.appendChild(opt);});sel.addEventListener('change',()=>{selectedMatches[i]=sel.value;});row.append(label,sel);grid.appendChild(row);});area.appendChild(grid);area.insertAdjacentHTML('beforeend','<div class="answer-note">每一列選一個最適合的配對。</div>');
+  }else if(q.type==='order'){
+    const picked=document.createElement('div');picked.className='order-picked';picked.id='orderPicked';area.appendChild(picked);
+    const list=document.createElement('div');list.className='options';q.options.forEach((v,i)=>{const b=document.createElement('button');b.className='option';b.innerHTML=`<span class="opt-letter">${i+1}</span><span>${v}</span>`;b.dataset.index=i;b.addEventListener('click',()=>{if(!selected.includes(i)){selected.push(i);renderOrder();}});list.appendChild(b);});area.appendChild(list);renderOrder();
+  }
+  $('#actionArea').innerHTML=`<button class="primary" id="checkAnswer">${q.type==='open'?'完成想法 →':'檢查答案 →'}</button><button class="secondary" id="showHint">給我一點提示</button>`;
+  $('#checkAnswer').addEventListener('click',checkAnswer);$('#showHint').addEventListener('click',showHint);
+}
+function renderOptions(){const q=tasks[taskIndex];document.querySelectorAll('#answerArea .option').forEach(b=>{const i=Number(b.dataset.index);b.classList.toggle('selected',selected.includes(i));});}
+function renderOrder(){const q=tasks[taskIndex];const p=$('#orderPicked');if(!p)return;p.innerHTML='';selected.forEach((idx,pos)=>{const chip=document.createElement('span');chip.className='order-chip';chip.innerHTML=`${pos+1}. ${q.options[idx]} <button aria-label="移除">×</button>`;chip.querySelector('button').addEventListener('click',()=>{selected.splice(pos,1);renderOrder();});p.appendChild(chip);});document.querySelectorAll('#answerArea .option').forEach(b=>{const i=Number(b.dataset.index);b.classList.toggle('selected',selected.includes(i));b.disabled=selected.includes(i);});}
+function showHint(){const q=tasks[taskIndex];hintShown=true;$('#hintArea').innerHTML=`<div class="hint-box"><strong>💡 小線索</strong><br>${q.hint}</div>`;}
+function chineseNumberToArabic(value){
+  const str=String(value||'').trim();if(/^\d+(\.\d+)?$/.test(str))return String(Number(str));
+  const digit={'零':0,'〇':0,'一':1,'二':2,'兩':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+  if(!/^[零〇一二兩三四五六七八九十百千]+$/.test(str))return str;
+  if(str==='十')return '10';let total=0,section=0,num=0;
+  for(const ch of str){if(ch in digit){num=digit[ch];}else if(ch==='十'){section+=(num||1)*10;num=0;}else if(ch==='百'){section+=(num||1)*100;num=0;}else if(ch==='千'){section+=(num||1)*1000;num=0;}}
+  total=section+num;return String(total);
+}
+function normalizeAnswer(value){
+  let s=String(value??'').normalize('NFKC').toLowerCase().trim();
+  s=s.replace(/^(答案(?:是|為)?|我算出來是|我覺得是|應該是|結果是|答：?|上午|下午|早上|晚上)/,'');
+  s=s.replace(/[，。！？、；;\s]/g,'');
+  s=s.replace(/(公分|厘米|公尺|公里|分鐘|小時|點鐘|點|元|顆|個|張|本|人|趟|頁|分|天)$/,'');
+  return chineseNumberToArabic(s);
+}
+function textAnswerIsCorrect(q,value){
+  const got=normalizeAnswer(value);if(!got)return false;
+  const accepted=[...(Array.isArray(q.answer)?q.answer:[q.answer]),...(q.accepted||[])].filter(v=>v!==undefined&&v!==null).map(normalizeAnswer);
+  if(accepted.includes(got))return true;
+  // If the expected answer is a simple number, accept a sentence that states that number as its answer,
+  // but do not accept arbitrary working that merely happens to contain the number.
+  const expectedNumbers=accepted.filter(x=>/^\d+(\.\d+)?$/.test(x));
+  if(expectedNumbers.length){let candidate=String(value??'').normalize('NFKC').trim();candidate=candidate.replace(/^(答案(?:是|為)?|我算出來是|我覺得是|應該是|結果是|答：?)/,'').replace(/[。！!？?]/g,'').trim();
+    const m=candidate.match(/^([零〇一二兩三四五六七八九十百千\d]+)(?:公分|厘米|公尺|公里|分鐘|小時|元|顆|個|張|本|人|趟|頁|分|天)?$/);
+    if(m&&expectedNumbers.includes(chineseNumberToArabic(m[1])))return true;
+  }
+  return false;
+}
+function checkAnswer(){const q=tasks[taskIndex];if(q.type==='open'){const val=$('#answerInput').value.trim();if(!val){$('#answerInput').focus();return;}openSubmitted=true;const own=document.createElement('textarea');own.className='open-answer';own.value=val;own.readOnly=true;own.setAttribute('aria-label','你的回答');$('#answerArea').innerHTML='';$('#answerArea').appendChild(own);const ownNote=document.createElement('div');ownNote.className='feedback open';ownNote.innerHTML='<strong>💭 你的想法已經完成！</strong>這題沒有唯一答案，先說說看你的方法如何符合題目要求，再和參考想法比較。';$('#answerArea').appendChild(ownNote);const sample=document.createElement('div');sample.className='hint-box';const sampleTitle=document.createElement('strong');sampleTitle.textContent='參考想法（不是唯一答案）';sample.appendChild(sampleTitle);sample.appendChild(document.createElement('br'));sample.appendChild(document.createTextNode(q.example));$('#answerArea').appendChild(sample);$('#actionArea').innerHTML=`<button class="primary" id="openDone">我有完成，也說得出理由 →</button><button class="secondary" id="openAgain">再修改一下</button>`;$('#openDone').addEventListener('click',()=>completeTask(true));$('#openAgain').addEventListener('click',()=>{renderTask();$('#answerInput').focus();});return;}
+  let ok=false;if(q.type==='choice')ok=selected.length===1&&selected[0]===q.answer;
+  if(q.type==='multi')ok=selected.length===q.answer.length&&q.answer.every(x=>selected.includes(x));
+  if(q.type==='order')ok=selected.length===q.answer.length&&q.answer.every((x,i)=>selected[i]===x);
+  if(q.type==='match')ok=q.pairs.every((pair,i)=>String(selectedMatches[i]??'')===String(pair.answer));
+  if(q.type==='text')ok=textAnswerIsCorrect(q,$('#answerInput').value);
+  if(ok){$('#feedbackArea').innerHTML=`<div class="feedback good"><strong>🎉 答對了！</strong>${q.why}</div>`;$('#actionArea').innerHTML=`<button class="primary" id="nextTask">下一關 →</button>`;$('#nextTask').addEventListener('click',()=>completeTask(true));}
+  else{attempts++;if(attempts===1){$('#feedbackArea').innerHTML=`<div class="feedback try"><strong>再觀察一次！</strong>沒關係，先檢查答案格式或題目條件；數字答案可寫阿拉伯數字或中文數字，也可加上常見單位。</div>`;if(!hintShown)showHint();}else{$('#feedbackArea').innerHTML=`<div class="feedback try"><strong>這次先看解法，下一題再挑戰！</strong>${q.why}</div>`;$('#actionArea').innerHTML=`<button class="primary" id="nextTask">知道了，下一關 →</button>`;$('#nextTask').addEventListener('click',()=>completeTask(false));}}
+}
+function completeTask(correct){const q=tasks[taskIndex];if(mode==='daily'){const st=todayState();st.doneIds=st.doneIds||[];if(!st.doneIds.includes(q.id)){st.doneIds.push(q.id);st.stars=(st.stars||0)+1;}st.completed=st.doneIds.length;saved.days[dateKey()]=st;saveSaved();}
+  taskIndex++;if(taskIndex<tasks.length){renderTask();}else{finishRun();}}
+function finishRun(){if(mode==='daily'){const st=todayState();st.done=true;st.completed=5;saved.days[dateKey()]=st;saveSaved();refreshHome();}
+  $('#challengeView').classList.remove('show');$('#finishView').classList.add('show');$('#finishMessage').textContent=mode==='daily'?'五關都完成了！你願意觀察、思考和嘗試，這就是今天最棒的收穫。':'這組練習完成！記得想一想，剛才哪一題最需要你換個方法思考。';$('#finishView').scrollIntoView({behavior:'smooth',block:'center'});}
+function renderProgress(){const days=Object.keys(saved.days).filter(k=>saved.days[k].done).sort();$('#recordDays').textContent=days.length;$('#recordStars').textContent=saved.totalStars||Object.values(saved.days).reduce((a,x)=>a+(x.stars||0),0);let streak=0;let d=new Date(dateKey()+'T12:00:00+08:00');for(let i=0;i<366;i++){const k=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(d);if(saved.days[k]?.done){streak++;d.setDate(d.getDate()-1);}else if(i===0){d.setDate(d.getDate()-1);}else break;}$('#recordStreak').textContent=streak;
+  const dots=$('#historyDots');dots.innerHTML='';for(let i=13;i>=0;i--){const d0=new Date(dateKey()+'T12:00:00+08:00');d0.setDate(d0.getDate()-i);const k=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(d0);const dot=document.createElement('div');dot.className='day-dot'+(saved.days[k]?.done?' done':'');dot.textContent=k.slice(8);dot.title=k;dots.appendChild(dot);}}
+function setGrade(g){grade=g;document.querySelectorAll('.grade-btn').forEach(b=>b.classList.toggle('active',Number(b.dataset.grade)===grade));const labels={1:'小一：基礎題為主，加入少量小挑戰',2:'小二：以規則推理與兩步驟題為主',3:'小三：多步驟與綜合推理'};$('#dailyNote').textContent=labels[grade];}
+$('#startDaily').addEventListener('click',()=>startRun('daily'));
+$('#backHome').addEventListener('click',()=>{showView('home');window.scrollTo({top:0,behavior:'smooth'});});
+$('#anotherSet').addEventListener('click',()=>startRun('practice'));
+$('#clearRecords').addEventListener('click',()=>{if(confirm('要清除這台裝置上的探險紀錄嗎？')){saved={days:{},totalStars:0,assignments:{},usedByGrade:{}};saveSaved();renderProgress();refreshHome();}});
+document.querySelectorAll('.grade-btn').forEach(b=>b.addEventListener('click',()=>setGrade(Number(b.dataset.grade))));
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+updateCategoryCounts();
+refreshHome();
+</script>
+</body>
+</html>
