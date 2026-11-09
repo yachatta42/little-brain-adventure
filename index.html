@@ -205,7 +205,7 @@ footer{font-size:14px}
       </div>
       <div class="start-row">
         <button class="primary" id="startDaily">開始今天的探險 →</button>
-        <span class="small-note" id="dailyNote">慢慢想，不怕答錯。</span>
+        <span class="small-note" id="dailyNote">答對的題目會收藏起來，不再重複出現。</span>
         <div class="grade-select"><span>選年級</span><button class="grade-btn active" data-grade="1">小一</button><button class="grade-btn" data-grade="2">小二</button><button class="grade-btn" data-grade="3">小三</button></div>
       </div>
     </section>
@@ -486,8 +486,8 @@ const CATS=[
 ];
 const $=s=>document.querySelector(s);
 const STORE='little-brain-adventure-v2';
-let saved=loadSaved();let grade=1,mode='daily',tasks=[],taskIndex=0,selected=[],selectedMatches=[],attempts=0,hintShown=false,openSubmitted=false;
-function loadSaved(){try{const current=localStorage.getItem(STORE);if(current)return JSON.parse(current)||{days:{},totalStars:0};const legacy=localStorage.getItem('little-brain-adventure-v1');if(legacy){const old=JSON.parse(legacy)||{days:{},totalStars:0};old.assignments=old.assignments||{};old.usedByGrade=old.usedByGrade||{};localStorage.setItem(STORE,JSON.stringify(old));return old;}return {days:{},totalStars:0,assignments:{},usedByGrade:{}};}catch(e){return {days:{},totalStars:0,assignments:{},usedByGrade:{}};}}
+let saved=loadSaved();saved.masteredQuestions=Array.isArray(saved.masteredQuestions)?saved.masteredQuestions:[];saved.usedByGrade=saved.usedByGrade||{};saved.assignments=saved.assignments||{};let grade=1,mode='daily',tasks=[],taskIndex=0,selected=[],selectedMatches=[],attempts=0,hintShown=false,openSubmitted=false;
+function loadSaved(){try{const current=localStorage.getItem(STORE);if(current)return JSON.parse(current)||{days:{},totalStars:0,assignments:{},usedByGrade:{},masteredQuestions:[]};const legacy=localStorage.getItem('little-brain-adventure-v1');if(legacy){const old=JSON.parse(legacy)||{days:{},totalStars:0};old.assignments=old.assignments||{};old.usedByGrade=old.usedByGrade||{};old.masteredQuestions=old.masteredQuestions||[];localStorage.setItem(STORE,JSON.stringify(old));return old;}return {days:{},totalStars:0,assignments:{},usedByGrade:{},masteredQuestions:[]};}catch(e){return {days:{},totalStars:0,assignments:{},usedByGrade:{},masteredQuestions:[]};}}
 function saveSaved(){try{localStorage.setItem(STORE,JSON.stringify(saved));}catch(e){/* 瀏覽器停用本機儲存時仍可正常遊玩，只是不保留紀錄。 */}}
 function updateCategoryCounts(){document.querySelectorAll('.category').forEach((el,i)=>{const cat=CATS[i];const count=(BANK[cat.key]||[]).length;const small=el.querySelector('small');if(small)small.textContent=count+' 題';});}
 function dateKey(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
@@ -506,22 +506,45 @@ function dailyCategories(dayNumber){
   const stride=3, start=dayNumber% CATS.length;
   return Array.from({length:5},(_,i)=>CATS[(start+i*stride)%CATS.length]);
 }
+function availablePool(cat,targetGrade){const mastered=new Set(saved.masteredQuestions||[]);return eligiblePool(cat,targetGrade).filter(q=>!mastered.has(q.id));}
+function chooseSet(candidateCats,seed,randomize=false){
+  const used=saved.usedByGrade[grade]||{};const chosen=[];const pickedCats=new Set();
+  for(let i=0;i<candidateCats.length&&chosen.length<5;i++){
+    const c=candidateCats[i];if(pickedCats.has(c.key))continue;
+    const pool=availablePool(c,grade);if(!pool.length)continue;
+    used[c.key]=used[c.key]||[];
+    let fresh=pool.filter(q=>!used[c.key].includes(q.id));
+    if(!fresh.length){used[c.key]=[];fresh=pool;}
+    const index=randomize?Math.floor(Math.random()*fresh.length):Math.abs(seed*3+i*5)%fresh.length;
+    const q=fresh[index];chosen.push(q);pickedCats.add(c.key);used[c.key].push(q.id);
+  }
+  saved.usedByGrade[grade]=used;saveSaved();return chosen;
+}
 function dailySet(){
   const n=dateIndex(dateKey());saved.assignments=saved.assignments||{};saved.usedByGrade=saved.usedByGrade||{};
-  const assignmentKey=`${dateKey()}-v3-g${grade}`;
+  const assignmentKey=dateKey()+'-v4-g'+grade;
   const byId=new Map(CATS.flatMap(c=>BANK[c.key]).map(q=>[q.id,q]));
-  if(saved.assignments[assignmentKey]){const existing=saved.assignments[assignmentKey].map(id=>byId.get(id)).filter(Boolean);if(existing.length===5)return existing;}
-  const cats=dailyCategories(n),used=saved.usedByGrade[grade]||{};
-  const chosen=cats.map((c,i)=>{const pool=eligiblePool(c,grade);used[c.key]=used[c.key]||[];let fresh=pool.filter(q=>!used[c.key].includes(q.id));if(!fresh.length){used[c.key]=[];fresh=pool;}const q=fresh[(n*3+i*5)%fresh.length];used[c.key].push(q.id);return q;});
-  saved.usedByGrade[grade]=used;saved.assignments[assignmentKey]=chosen.map(q=>q.id);const keys=Object.keys(saved.assignments).sort();if(keys.length>60)keys.slice(0,keys.length-60).forEach(k=>delete saved.assignments[k]);saveSaved();return chosen;
+  const mastered=new Set(saved.masteredQuestions||[]);
+  if(saved.assignments[assignmentKey]){
+    const existing=saved.assignments[assignmentKey].map(id=>byId.get(id)).filter(q=>q&&!mastered.has(q.id));
+    if(existing.length===5)return existing;
+  }
+  const cats=dailyCategories(n);const ordered=[...cats,...CATS.filter(c=>!cats.some(x=>x.key===c.key))];
+  const chosen=chooseSet(ordered,n,false);
+  saved.assignments[assignmentKey]=chosen.map(q=>q.id);
+  const keys=Object.keys(saved.assignments).sort();if(keys.length>60)keys.slice(0,keys.length-60).forEach(k=>delete saved.assignments[k]);
+  saveSaved();return chosen;
 }
-function randomSet(){const cats=dailyCategories(dateIndex(dateKey())+Math.floor(Math.random()*8));return cats.map(c=>{const pool=eligiblePool(c,grade);return pool[Math.floor(Math.random()*pool.length)];}).sort(()=>Math.random()-.5);}
+function randomSet(){
+  const cats=[...CATS].sort(()=>Math.random()-.5);
+  return chooseSet(cats,dateIndex(dateKey()),true).sort(()=>Math.random()-.5);
+}
 function refreshHome(){const st=todayState();$('#todayLabel').textContent=prettyDate();$('#doneToday').textContent=`${Math.min(5,(st.doneIds||[]).length||st.completed||0)} / 5`;
   $('#totalDays').textContent=Object.values(saved.days).filter(x=>x.done).length;
-  $('#dailyNote').textContent=st.done?'今天已經完成，想再玩可以去自由練習！':'完成五關就收工，不必追求全對。';
+  $('#dailyNote').textContent=st.done?'今天已經完成，想再玩可以去練習！':'答對的題目會收藏起來，不再重複出現。';
   $('#startDaily').textContent=st.done?'再看一次今日任務 →':'開始今天的探險 →';}
 function showView(view){$('#challengeView').classList.remove('show');$('#finishView').classList.remove('show');$('#progressView').classList.remove('show');$('#homeView').classList.toggle('hidden',view==='progress');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='progress'){renderProgress();$('#progressView').classList.add('show');}else if(view==='practice'){startRun('practice');}else{refreshHome();}}
-function startRun(which){mode=which;tasks=which==='daily'?dailySet():randomSet();taskIndex=0;$('#homeView').classList.remove('hidden');$('#progressView').classList.remove('show');$('#finishView').classList.remove('show');$('#challengeView').classList.add('show');renderTask();$('#challengeView').scrollIntoView({behavior:'smooth',block:'start'});}
+function startRun(which){mode=which;tasks=which==='daily'?dailySet():randomSet();taskIndex=0;$('#homeView').classList.remove('hidden');$('#progressView').classList.remove('show');$('#finishView').classList.remove('show');if(!tasks.length){$('#challengeView').classList.remove('show');$('#finishView').classList.add('show');$('#finishMessage').textContent='這個年級目前能抽到的題目都已經答對了！可以換個年級繼續探索，或等新題目加入再來挑戰。';$('#finishView').scrollIntoView({behavior:'smooth',block:'center'});return;}$('#challengeView').classList.add('show');renderTask();$('#challengeView').scrollIntoView({behavior:'smooth',block:'start'});}
 function renderTask(){const q=tasks[taskIndex];selected=[];selectedMatches=[];attempts=0;hintShown=false;openSubmitted=false;
   $('#stepLabel').textContent=`第 ${taskIndex+1} 關 / ${tasks.length}`;$('#topicPill').textContent=`${CATS.find(c=>BANK[c.key].some(x=>x.id===q.id)).emoji} ${CATS.find(c=>BANK[c.key].some(x=>x.id===q.id)).label}`;
   $('#skillLabel').textContent=q.skill;$('#questionTitle').textContent=q.title;$('#questionPrompt').textContent=q.prompt;$('#questionHelper').textContent=q.level===3?'🚀 小小進階任務：試著整理步驟，並說明理由。':q.level===2?'✨ 挑戰一下：先看懂規則，再試著自己完成。':'🌱 慢慢想，找找看題目給了什麼線索。';$('#progressBar').style.width=`${taskIndex/tasks.length*100}%`;
@@ -583,9 +606,9 @@ function checkAnswer(){const q=tasks[taskIndex];if(q.type==='open'){const val=$(
   if(ok){$('#feedbackArea').innerHTML=`<div class="feedback good"><strong>🎉 答對了！</strong>${q.why}</div>`;$('#actionArea').innerHTML=`<button class="primary" id="nextTask">下一關 →</button>`;$('#nextTask').addEventListener('click',()=>completeTask(true));}
   else{attempts++;if(attempts===1){$('#feedbackArea').innerHTML=`<div class="feedback try"><strong>再觀察一次！</strong>沒關係，先檢查答案格式或題目條件；數字答案可寫阿拉伯數字或中文數字，也可加上常見單位。</div>`;if(!hintShown)showHint();}else{$('#feedbackArea').innerHTML=`<div class="feedback try"><strong>這次先看解法，下一題再挑戰！</strong>${q.why}</div>`;$('#actionArea').innerHTML=`<button class="primary" id="nextTask">知道了，下一關 →</button>`;$('#nextTask').addEventListener('click',()=>completeTask(false));}}
 }
-function completeTask(correct){const q=tasks[taskIndex];if(mode==='daily'){const st=todayState();st.doneIds=st.doneIds||[];if(!st.doneIds.includes(q.id)){st.doneIds.push(q.id);st.stars=(st.stars||0)+1;}st.completed=st.doneIds.length;saved.days[dateKey()]=st;saveSaved();}
+function completeTask(correct){const q=tasks[taskIndex];if(correct&&!saved.masteredQuestions.includes(q.id)){saved.masteredQuestions.push(q.id);}if(mode==='daily'){const st=todayState();st.doneIds=st.doneIds||[];if(!st.doneIds.includes(q.id)){st.doneIds.push(q.id);st.stars=(st.stars||0)+1;}st.completed=st.doneIds.length;saved.days[dateKey()]=st;}saveSaved();
   taskIndex++;if(taskIndex<tasks.length){renderTask();}else{finishRun();}}
-function finishRun(){if(mode==='daily'){const st=todayState();st.done=true;st.completed=5;saved.days[dateKey()]=st;saveSaved();refreshHome();}
+function finishRun(){if(mode==='daily'){const st=todayState();st.done=true;st.completed=tasks.length;st.total=tasks.length;saved.days[dateKey()]=st;saveSaved();refreshHome();}
   $('#challengeView').classList.remove('show');$('#finishView').classList.add('show');$('#finishMessage').textContent=mode==='daily'?'五關都完成了！你願意觀察、思考和嘗試，這就是今天最棒的收穫。':'這組練習完成！記得想一想，剛才哪一題最需要你換個方法思考。';$('#finishView').scrollIntoView({behavior:'smooth',block:'center'});}
 function renderProgress(){const days=Object.keys(saved.days).filter(k=>saved.days[k].done).sort();$('#recordDays').textContent=days.length;$('#recordStars').textContent=saved.totalStars||Object.values(saved.days).reduce((a,x)=>a+(x.stars||0),0);let streak=0;let d=new Date(dateKey()+'T12:00:00+08:00');for(let i=0;i<366;i++){const k=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(d);if(saved.days[k]?.done){streak++;d.setDate(d.getDate()-1);}else if(i===0){d.setDate(d.getDate()-1);}else break;}$('#recordStreak').textContent=streak;
   const dots=$('#historyDots');dots.innerHTML='';for(let i=13;i>=0;i--){const d0=new Date(dateKey()+'T12:00:00+08:00');d0.setDate(d0.getDate()-i);const k=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(d0);const dot=document.createElement('div');dot.className='day-dot'+(saved.days[k]?.done?' done':'');dot.textContent=k.slice(8);dot.title=k;dots.appendChild(dot);}}
@@ -593,7 +616,7 @@ function setGrade(g){grade=g;document.querySelectorAll('.grade-btn').forEach(b=>
 $('#startDaily').addEventListener('click',()=>startRun('daily'));
 $('#backHome').addEventListener('click',()=>{showView('home');window.scrollTo({top:0,behavior:'smooth'});});
 $('#anotherSet').addEventListener('click',()=>startRun('practice'));
-$('#clearRecords').addEventListener('click',()=>{if(confirm('要清除這台裝置上的探險紀錄嗎？')){saved={days:{},totalStars:0,assignments:{},usedByGrade:{}};saveSaved();renderProgress();refreshHome();}});
+$('#clearRecords').addEventListener('click',()=>{if(confirm('要清除這台裝置上的探險紀錄嗎？')){saved={days:{},totalStars:0,assignments:{},usedByGrade:{},masteredQuestions:[]};saveSaved();renderProgress();refreshHome();}});
 document.querySelectorAll('.grade-btn').forEach(b=>b.addEventListener('click',()=>setGrade(Number(b.dataset.grade))));
 document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
 updateCategoryCounts();
