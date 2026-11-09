@@ -4,7 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 concurrency:
@@ -36,8 +36,18 @@ jobs:
           assert '<!doctype html>' in html.lower(), 'Missing HTML document'
           assert '小小腦力探險隊' in html, 'Missing site title'
           assert len(question_ids) >= 100, f'Question bank unexpectedly small: {len(question_ids)}'
+          Path('site-source.html').write_text(html, encoding='utf-8')
           print(f'Bundle OK: {len(html):,} HTML characters; {len(question_ids)} question IDs.')
           PY
+      - name: Save editable source in repository
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add site-source.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add editable site source'
+            git push
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
