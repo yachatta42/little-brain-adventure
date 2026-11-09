@@ -27,13 +27,16 @@ jobs:
           ids = re.findall(r"id:'([a-z]\d+)',level:", html)
           assert '<!doctype html>' in html.lower(), 'Missing HTML document'
           assert '小小腦力探險隊' in html, 'Missing site title'
-          assert len(ids) == 160, f'Expected 160 questions, found {len(ids)}'
+          assert len(ids) == 250, f'Expected 250 questions, found {len(ids)}'
           assert len(set(ids)) == len(ids), 'Question IDs must be unique'
-          for prefix, category in {'l':'語文表達','m':'數學推理','p':'觀察與規律','g':'分類與邏輯','s':'生活與空間','x':'空間推理','d':'資料判讀','c':'自然探究'}.items():
+          expected = {'l':40,'m':30,'p':30,'g':30,'s':30,'x':30,'d':30,'c':30}
+          names = {'l':'語文表達','m':'數學推理','p':'觀察與規律','g':'分類與邏輯','s':'生活與空間','x':'空間推理','d':'資料判讀','c':'自然探究'}
+          for prefix, expected_count in expected.items():
               count = sum(q.startswith(prefix) for q in ids)
-              assert count == 20, f'{category}: expected 20 questions, found {count}'
+              assert count == expected_count, f'{names[prefix]}: expected {expected_count} questions, found {count}'
           assert html.count("type:'open'") <= 1, 'Too many open-answer questions'
-          print('Site OK: 160 unique questions; 20 questions in each of 8 categories.')
+          assert 'function availablePool(' in html and 'saved.masteredQuestions.push(q.id)' in html, 'Mastered-question exclusion is missing'
+          print('Site OK: 250 unique questions; category counts and mastered-question tracking verified.')
           PY
           python - <<'PY'
           from pathlib import Path
