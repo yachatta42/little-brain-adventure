@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f7f8f3"><title>小小腦力探險隊</title></head>
+<body style="font-family:system-ui,sans-serif;background:#f7f8f3;color:#26342f;padding:2rem">
+<p>小小腦力探險隊正在載入⋯⋯</p>
+<script src="payload-1.js"></script><script src="payload-2.js"></script><script src="payload-3.js"></script><script src="payload-4.js"></script><script src="payload-5.js"></script>
+<script>
+(async()=>{try{if(!('DecompressionStream' in window))throw new Error('請使用最新版 Chrome、Edge、Safari 或 Firefox。');const b=Uint8Array.from(atob(window.APP_GZIP),c=>c.charCodeAt(0));const stream=new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'));const html=await new Response(stream).text();document.open();document.write(html);document.close();}catch(e){document.body.innerHTML='網站載入失敗：'+e.message;}})();
+</script></body></html>
