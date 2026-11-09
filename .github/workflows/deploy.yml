@@ -32,7 +32,7 @@ jobs:
               pieces.append(source[len(prefix):-3])
           compressed = base64.b64decode(''.join(pieces), validate=True)
           html = gzip.decompress(compressed).decode('utf-8')
-          question_ids = re.findall(r"\\bid:'[^']+'", html)
+          question_ids = re.findall(r"id:'[^']+'", html)
           assert '<!doctype html>' in html.lower(), 'Missing HTML document'
           assert '小小腦力探險隊' in html, 'Missing site title'
           assert len(question_ids) >= 100, f'Question bank unexpectedly small: {len(question_ids)}'
